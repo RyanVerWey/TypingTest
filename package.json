@@ -3,11 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": { "node": "22.x", "npm": "10.x" },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "heroku-postbuild": "npm run build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "vite preview --port $PORT --strictPort"
   },
   "dependencies": {
     "framer-motion": "^12.23.12",
