@@ -163,4 +163,4 @@ Created and maintained by Ryan VerWey
 For questions, feedback, or contributions:
 
 - GitHub: [https://github.com/RyanVerWey/github.com/RyanVerWey]
-- Email: your.email@example.com
+- Email: ryan.w.verwey@gmail.com
