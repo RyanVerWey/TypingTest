@@ -311,11 +311,12 @@ This project is open-source and available under the **MIT License**.
 
 ## Contact
 
-**Created and maintained by Ryan VerWey**
+**Created and maintained by Ryan VerWey & Rachel VerWey**
 
 For questions, feedback, or collaboration opportunities:
 
-- **GitHub**: [RyanVerWey](https://github.com/RyanVerWey)
+- **Ryan's GitHub**: [RyanVerWey](https://github.com/RyanVerWey)
+- **Rachel's GitHub**: [rachelanne421](https://github.com/rachelanne421)
 - **Email**: ryan.w.verwey@gmail.com
 - **Project Repository**: [TypingTest](https://github.com/RyanVerWey/TypingTest)
 
@@ -327,5 +328,6 @@ For questions, feedback, or collaboration opportunities:
 - Styled with Tailwind CSS 4
 - Charts powered by Recharts
 - Deployed on Heroku platform
+- Documentation collaboration by Rachel VerWey
 
 *Happy typing! 🎯⚡*
