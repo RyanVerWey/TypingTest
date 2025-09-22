@@ -309,6 +309,22 @@ This project is open-source and available under the **MIT License**.
 
 ---
 
+## Contributors
+
+This project is brought to you by:
+
+### 👨‍💻 Ryan VerWey
+- **Role**: Lead Developer & Project Maintainer
+- **GitHub**: [@RyanVerWey](https://github.com/RyanVerWey)
+- **Contributions**: Core application development, architecture design, React implementation
+
+### 👩‍💻 Rachel VerWey
+- **Role**: Documentation Specialist & Co-Maintainer  
+- **GitHub**: [@rachelanne421](https://github.com/rachelanne421)
+- **Contributions**: Comprehensive documentation, README enhancements, user experience improvements
+
+---
+
 ## Contact
 
 **Created and maintained by Ryan VerWey & Rachel VerWey**
