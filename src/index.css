@@ -7,6 +7,7 @@
   --bg: 245 245 248; /* slate-100-ish */
   --bg-accent: 255 255 255;
   --text: 17 24 39; /* slate-900 */
+  --text-rgb: 17, 24, 39; /* for rgba() usage */
   --muted: 71 85 105; /* slate-600 */
   --border: 226 232 240; /* slate-200 */
   --brand: 59 130 246; /* blue-500 */
@@ -25,6 +26,7 @@ html[data-theme="dark"] {
   --bg: 15 23 42; /* slate-900 */
   --bg-accent: 30 41 59; /* slate-800 */
   --text: 241 245 249; /* slate-100 */
+  --text-rgb: 241, 245, 249; /* for rgba() usage */
   --muted: 148 163 184; /* slate-400 */
   --border: 51 65 85; /* slate-700 */
   --brand: 59 130 246; /* blue-500 */
@@ -49,6 +51,24 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: rgb(var(--text));
   background: rgb(var(--bg));
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+@keyframes underlineBlink {
+  0%, 50% { 
+    borderBottomColor: rgb(59, 130, 246);
+    backgroundColor: rgb(59, 130, 246);
+    opacity: 1; 
+  }
+  51%, 100% { 
+    borderBottomColor: rgba(59, 130, 246, 0.4);
+    backgroundColor: rgba(59, 130, 246, 0.4);
+    opacity: 0.4; 
+  }
 }
 
 /* Professional glass morphism */

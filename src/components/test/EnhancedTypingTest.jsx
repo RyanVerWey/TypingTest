@@ -2,7 +2,7 @@
 // FILE: src/components/test/EnhancedTypingTest.jsx
 // Enhanced typing test with real-time analytics and corrections tracking
 // ================================
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildPassage, DIFFICULTY_OPTIONS, DIFFICULTY_LABELS } from "../../lib/passage.js";
 import { computeWPM, fmtTime, buildCharStats } from "../../lib/metrics.js";
@@ -54,10 +54,9 @@ const DIFFICULTY_CONFIG = {
 };
 
 export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
-  const [lines, setLines] = useState([]);
-  const [lineIdx, setLineIdx] = useState(0);
-  const [lineInput, setLineInput] = useState("");
-  const [typedSoFar, setTypedSoFar] = useState("");
+  // Single-block target and typed stream — no auto-advance per sentence
+  const [target, setTarget] = useState("");
+  const [typed, setTyped] = useState("");
   const [started, setStarted] = useState(false);
   const [finished, setFinished] = useState(false);
   const [timeLeft, setTimeLeft] = useState(TEST_SECONDS);
@@ -72,18 +71,16 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
 
   // Keep latest typed string in a ref so the timer effect doesn't depend on it
   useEffect(() => {
-    typedRef.current = typedSoFar + lineInput;
-  }, [typedSoFar, lineInput]);
+    typedRef.current = typed;
+  }, [typed]);
 
-  // Rebuild passage when difficulty changes
+  // Rebuild passage when difficulty changes — flatten to a single block with proper word wrapping
   useEffect(() => {
     const p = buildPassage(difficulty);
-    // Split by sentences to maintain natural breaks and prevent word wrapping
-    const sentences = p.split(/(?<=[.!?])\s+/).filter(Boolean);
-    setLines(sentences);
-    setLineIdx(0);
-    setLineInput("");
-    setTypedSoFar("");
+    // Replace newlines with spaces but preserve natural word boundaries
+    const block = p.replace(/\s*\n+\s*/g, ' ').replace(/\s+/g, ' ').trim();
+    setTarget(block);
+    setTyped("");
     setStarted(false);
     setFinished(false);
     setTimeLeft(TEST_SECONDS);
@@ -93,22 +90,19 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
     analyticsRef.current.reset();
   }, [difficulty]);
 
-  // Linearized target that matches how we join completed lines (single \n)
-  const targetLinearized = useMemo(() => lines.join("\n"), [lines]);
-
   // Derived stats over everything typed so far
-  const totalTyped = typedSoFar + lineInput;
+  const totalTyped = typed;
 
   // Enhanced accuracy calculation using real-time analytics
   const enhancedAccuracy = useMemo(() => {
-    return analyticsRef.current.calculateTrueAccuracy(totalTyped, targetLinearized);
-  }, [totalTyped, targetLinearized]);
+    return analyticsRef.current.calculateTrueAccuracy(totalTyped, target);
+  }, [totalTyped, target]);
 
   const accuracy = enhancedAccuracy.adjusted;
   const wpm = computeWPM(totalTyped, TEST_SECONDS - timeLeft);
 
   // Character-class stats (letters / numbers / symbols)
-  const charStats = useMemo(() => buildCharStats(totalTyped, targetLinearized), [totalTyped, targetLinearized]);
+  const charStats = useMemo(() => buildCharStats(totalTyped, target), [totalTyped, target]);
 
   // Seed an initial timeline point when the test starts so a line will render
   useEffect(() => {
@@ -149,33 +143,32 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
 
   // Enhanced keystroke handler with analytics
   function handleChange(e) {
-    const v = e.target.value;
+    let v = e.target.value;
     if (!started) setStarted(true);
-    
-    const prevLength = lineInput.length;
+
+    // Clamp to target length
+    if (v.length > target.length) v = v.slice(0, target.length);
+
+    const prevLength = typed.length;
     const newLength = v.length;
-    const position = typedSoFar.length + newLength;
-    const target = lines[lineIdx] || "";
-    
-    // Detect if this was a backspace/deletion
+    const position = newLength; // position in the single stream
+
+    // Detect if this was a backspace/deletion vs addition (record last char only)
     if (newLength < prevLength) {
-      // Backspace detected
       analyticsRef.current.recordKeystroke('Backspace', null, true, Date.now(), position);
     } else if (newLength > prevLength) {
-      // New character typed
       const newChar = v[newLength - 1];
       const targetChar = target[newLength - 1];
       const isCorrect = newChar === targetChar;
-      
       analyticsRef.current.recordKeystroke(newChar, targetChar, isCorrect, Date.now(), position);
     }
-    
-    setLineInput(v);
+
+    setTyped(v);
     setKeystrokes((k) => k + 1);
 
-    // Auto-advance when line is complete
     if (v.length >= target.length) {
-      advanceLine(v);
+      setFinished(true);
+      setTimeLeft(0);
     }
   }
 
@@ -183,31 +176,15 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
   function handleKeyDown(e) {
     // Record special keys
     if (['Enter', 'Tab', 'Shift', 'Control', 'Alt'].includes(e.key)) {
-      const position = typedSoFar.length + lineInput.length;
+      const position = typed.length;
       analyticsRef.current.recordKeystroke(e.key, null, true, Date.now(), position);
     }
-
+    // Enter is not required; prevent inserting unexpected characters
     if (e.key === "Enter") {
       e.preventDefault();
-      const target = lines[lineIdx] || "";
-      if (lineInput.length >= target.length) advanceLine(lineInput);
     }
   }
-
-  function advanceLine(finalValueForLine) {
-    const target = lines[lineIdx] || "";
-    const lineToAppend = finalValueForLine.slice(0, target.length);
-    setTypedSoFar((prev) => (prev ? prev + "\n" + lineToAppend : lineToAppend));
-    setLineInput("");
-    const next = lineIdx + 1;
-    if (next >= lines.length) {
-      setFinished(true);
-      setTimeLeft(0);
-    } else {
-      setLineIdx(next);
-      setTimeout(() => inputRef.current?.focus(), 0);
-    }
-  }
+  // No advanceLine; we type through the single target block
 
   // Enhanced finish handler with analytics
   useEffect(() => {
@@ -221,8 +198,8 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
       ? [...timeline, { t: elapsed, wpm: computeWPM(typedRef.current, elapsed), ts: Date.now() }]
       : timeline;
 
-    const duration = elapsed > 0 ? elapsed : TEST_SECONDS;
-    const finalWPM = computeWPM(typedRef.current, duration);
+  const duration = elapsed > 0 ? elapsed : TEST_SECONDS;
+  const finalWPM = computeWPM(typedRef.current, duration);
 
     // Get enhanced analytics
     const analytics = analyticsRef.current.getSummary();
@@ -250,12 +227,9 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
 
   function resetTest() {
     const p = buildPassage(difficulty);
-    // Split by sentences to maintain natural breaks and prevent word wrapping
-    const sentences = p.split(/(?<=[.!?])\s+/).filter(Boolean);
-    setLines(sentences);
-    setLineIdx(0);
-    setLineInput("");
-    setTypedSoFar("");
+    const block = p.replace(/\s*\n+\s*/g, ' ').replace(/\s+/g, ' ').trim();
+    setTarget(block);
+    setTyped("");
     setStarted(false);
     setFinished(false);
     setTimeLeft(TEST_SECONDS);
@@ -407,9 +381,9 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
 
       </div>
 
-      {/* Typing passage */}
+      {/* Typing passage — single static block with row highlight */}
       <div className="py-8">
-        <TypingPassage lines={lines} lineIdx={lineIdx} lineInput={lineInput} />
+        <BlockTypingPassage target={target} typed={typed} />
       </div>
 
       {/* Input field */}
@@ -419,13 +393,13 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
             ref={inputRef}
             type="text"
             disabled={finished}
-            value={lineInput}
+            value={typed}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder={!started ? "Click here and start typing..." : "Continue typing..."}
             className="w-full px-8 py-6 font-mono rounded-xl outline-none transition-all duration-300 glass"
             style={{ 
-              height: '5rem',
+              height: '6.5rem',
               fontSize: '1.5rem',
               lineHeight: '1.4',
               color: 'rgb(var(--text))', 
@@ -435,7 +409,7 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
               boxShadow: started 
                 ? '0 0 24px rgba(59,130,246,0.3), inset 0 2px 4px rgba(0,0,0,0.1)' 
                 : '0 6px 20px rgba(0,0,0,0.1), inset 0 2px 4px rgba(0,0,0,0.1)',
-              wordBreak: 'keep-all',
+              wordBreak: 'normal',
               overflowWrap: 'break-word'
             }}
           />
@@ -456,92 +430,232 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
 }
 
 // Simple, clean typing display with natural sentence flow
-function TypingPassage({ lines, lineIdx, lineInput }) {
-  const activePos = lineInput.length;
-  const currentLine = lines[lineIdx];
-  const nextLine = lines[lineIdx + 1];
-  
-  if (!currentLine) return null;
-  
+function BlockTypingPassage({ target, typed }) {
+  const containerRef = useRef(null);
+  const markerRef = useRef(null);
+  const [lineTop, setLineTop] = useState(0);
+  const [lineHeight, setLineHeight] = useState(0);
+
+  // Measure marker position to place highlight bar on the active visual row
+  const measure = () => {
+    const el = containerRef.current;
+    const mk = markerRef.current;
+    if (!el || !mk) return;
+    // Use geometry from DOM rectangles for reliable pixel values
+    const elRect = el.getBoundingClientRect();
+    const mkRect = mk.getBoundingClientRect();
+    // Height of the current line: prefer marker rect height, fall back to computed px
+    let lh = mkRect.height;
+    if (!lh || lh < 2) {
+      const cs = window.getComputedStyle(el);
+      const parsed = parseFloat(cs.lineHeight);
+      if (!isNaN(parsed) && cs.lineHeight.endsWith('px')) {
+        lh = parsed;
+      } else {
+        const fs = parseFloat(cs.fontSize) || 25.6; // approx 1.6rem default above
+        lh = fs * 1.7; // mirror inline style
+      }
+    }
+    setLineHeight(lh);
+    // Top relative to the container box
+    const top = mkRect.top - elRect.top + el.scrollTop;
+    setLineTop(Math.max(0, top));
+  };
+
+  useLayoutEffect(() => {
+    measure();
+    // Re-measure after paint too
+    const rId = requestAnimationFrame(measure);
+    return () => cancelAnimationFrame(rId);
+  }, [target, typed]);
+
+  useEffect(() => {
+    const onResize = () => measure();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const caretIndex = Math.min(typed.length, target.length);
+
   return (
     <div className="w-full max-w-none">
       <div className="rounded-lg p-8 glass" style={{ 
         borderColor: 'rgb(var(--border))',
         borderWidth: '1px',
         background: 'rgba(255,255,255,0.02)',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.06)'
+        boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+        minHeight: '14rem'
       }}>
-        {/* Current line being typed */}
-        <div className="mb-6">
-          <div 
-            className="font-mono leading-relaxed break-words"
-            style={{ 
-              fontSize: '1.75rem', 
-              lineHeight: '1.6',
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word',
-              width: '100%'
+        <div className="relative">
+          {/* Row highlight overlay */}
+          <div
+            className="absolute left-0 right-0 pointer-events-none rounded"
+            style={{
+              top: `${Math.max(0, lineTop - 3)}px`,
+              height: `${lineHeight + 6}px`,
+              background: 'rgba(59,130,246,0.12)',
+              border: '1px solid rgba(59,130,246,0.25)'
+            }}
+          />
+
+          {/* Text content */}
+          <div
+            ref={containerRef}
+            className="font-mono leading-relaxed"
+            style={{
+              fontSize: '1.75rem',
+              lineHeight: '1.8',
+              wordBreak: 'keep-all',
+              overflowWrap: 'anywhere',
+              whiteSpace: 'pre-wrap',
+              color: 'rgb(var(--text))'
             }}
           >
-            {[...currentLine].map((ch, idx) => {
-              const typed = lineInput[idx];
-              const atCursor = idx === activePos;
+            {(() => {
+              const nodes = [];
+              const words = target.split(/(\s+)/); // Split on whitespace but keep the separators
+              let charIndex = 0;
               
-              let className = '';
-              let style = {};
+              // Calculate progress segments for fading with sentence buffers
+              const totalChars = target.length;
+              const typedChars = typed.length;
               
-              if (typed == null) {
-                // Untyped characters
-                if (idx < activePos + 10) {
-                  style.color = 'rgb(var(--text))';
-                  style.opacity = '0.9';
+              // Find sentence boundaries (periods, exclamation marks, question marks)
+              const sentences = target.split(/([.!?]\s+)/).filter(s => s.trim().length > 0);
+              let sentenceStartIndices = [];
+              let currentIndex = 0;
+              for (const sentence of sentences) {
+                sentenceStartIndices.push(currentIndex);
+                currentIndex += sentence.length;
+              }
+              
+              // Find current sentence and apply buffer
+              let currentSentence = 0;
+              for (let i = 0; i < sentenceStartIndices.length; i++) {
+                if (typedChars >= sentenceStartIndices[i]) {
+                  currentSentence = i;
                 } else {
-                  style.color = 'rgb(var(--muted))';
-                  style.opacity = '0.5';
+                  break;
                 }
-              } else if (typed === ch) {
-                // Correct characters
-                style.color = 'rgb(34, 197, 94)';
-              } else {
-                // Incorrect characters
-                style.color = 'rgb(239, 68, 68)';
               }
               
-              if (atCursor) {
-                className = 'bg-blue-500 bg-opacity-20 rounded px-1';
+              // Buffer: keep current sentence + 1 before + 1 after fully visible
+              const bufferStart = Math.max(0, currentSentence - 1);
+              const bufferEnd = Math.min(sentences.length - 1, currentSentence + 1);
+              
+              const bufferStartChar = sentenceStartIndices[bufferStart] || 0;
+              const bufferEndChar = sentenceStartIndices[bufferEnd + 1] || totalChars;
+              
+              for (let wordIdx = 0; wordIdx < words.length; wordIdx++) {
+                const word = words[wordIdx];
+                const wordNodes = [];
+                const wordStartIndex = charIndex;
+                
+                // Calculate opacity based on position relative to typed area and buffer
+                let opacity = 1;
+                if (wordStartIndex < typedChars - 100) {
+                  // Far behind typed text: fade out
+                  opacity = 0.2;
+                } else if (wordStartIndex < bufferStartChar) {
+                  // Before buffer: dim
+                  opacity = 0.4;
+                } else if (wordStartIndex >= bufferStartChar && wordStartIndex <= bufferEndChar) {
+                  // In buffer zone: full visibility
+                  opacity = 1;
+                } else if (wordStartIndex > bufferEndChar && wordStartIndex <= bufferEndChar + 200) {
+                  // Just after buffer: slightly dimmed
+                  opacity = 0.7;
+                } else {
+                  // Far ahead: very dimmed
+                  opacity = 0.3;
+                }
+                
+                for (let i = 0; i < word.length; i++) {
+                  const globalIndex = charIndex + i;
+                  
+                  if (globalIndex === caretIndex) {
+                    // Add invisible marker for positioning
+                    wordNodes.push(
+                      <span key={`mk-${globalIndex}`} ref={markerRef} style={{ display: 'inline-block', width: 0, height: 0 }} />
+                    );
+                  }
+                  
+                  const ch = word[i];
+                  const t = typed[globalIndex];
+                  let color;
+                  if (t == null) {
+                    color = `rgba(var(--text-rgb), ${opacity})`;
+                  } else if (t === ch) {
+                    color = `rgba(34, 197, 94, ${Math.min(1, opacity + 0.2)})`;
+                  } else {
+                    color = `rgba(239, 68, 68, ${Math.min(1, opacity + 0.3)})`;
+                  }
+                  
+                  // Add underline indicator for current caret position
+                  const isAtCaret = globalIndex === caretIndex;
+                  
+                  wordNodes.push(
+                    <span 
+                      key={globalIndex} 
+                      style={{ 
+                        color, 
+                        transition: 'color 0.6s ease, opacity 0.6s ease',
+                        position: 'relative',
+                        borderBottom: isAtCaret ? '3px solid rgb(59, 130, 246)' : 'none',
+                        borderRadius: isAtCaret ? '1px' : 'none',
+                        boxShadow: isAtCaret ? '0 3px 6px rgba(59, 130, 246, 0.4)' : 'none',
+                        animation: isAtCaret ? 'underlineBlink 1s infinite' : 'none'
+                      }}
+                    >
+                      {ch === ' ' ? '\u00A0' : ch}
+                    </span>
+                  );
+                }
+                
+                // Wrap each word in a span to preserve word boundaries
+                nodes.push(
+                  <span 
+                    key={`word-${wordIdx}`} 
+                    style={{ 
+                      display: 'inline-block', 
+                      whiteSpace: /^\s+$/.test(word) ? 'pre' : 'nowrap',
+                      opacity: opacity,
+                      transition: 'opacity 0.6s ease'
+                    }}
+                  >
+                    {wordNodes}
+                  </span>
+                );
+                
+                charIndex += word.length;
               }
               
-              return (
-                <span key={idx} className={className} style={style}>
-                  {ch === ' ' ? '\u00A0' : ch}
-                </span>
-              );
-            })}
-            {activePos >= currentLine.length && (
-              <span 
-                className="inline-block w-0.5 bg-blue-500 animate-pulse ml-1"
-                style={{ height: '1.75rem' }}
-              />
-            )}
+              // Marker at end if caret at the end
+              if (caretIndex === target.length) {
+                nodes.push(
+                  <span key={`mk-end`} ref={markerRef} style={{ display: 'inline-block', width: 0, height: 0 }} />
+                );
+                nodes.push(
+                  <span 
+                    key={`caret-end`} 
+                    style={{ 
+                      display: 'inline-block',
+                      width: '0.5em',
+                      height: '3px',
+                      backgroundColor: 'rgb(59, 130, 246)',
+                      marginLeft: '2px',
+                      borderRadius: '1px',
+                      animation: 'underlineBlink 1s infinite',
+                      boxShadow: '0 0 6px rgba(59, 130, 246, 0.6)'
+                    }} 
+                  />
+                );
+              }
+              
+              return nodes;
+            })()}
           </div>
         </div>
-
-        {/* Next line preview - simple and clean */}
-        {nextLine && (
-          <div 
-            className="font-mono leading-relaxed break-words opacity-40"
-            style={{ 
-              fontSize: '1.25rem', 
-              lineHeight: '1.5',
-              color: 'rgb(var(--muted))',
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word',
-              width: '100%'
-            }}
-          >
-            {nextLine}
-          </div>
-        )}
       </div>
     </div>
   );
