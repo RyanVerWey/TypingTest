@@ -15,6 +15,21 @@
     <meta name="twitter:image" content="https://speedtest-b0c193f4cfb2.herokuapp.com/typing-test-preview.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Typing Speed Test</title>
+    <script>
+      (function() {
+        try {
+          var theme = sessionStorage.getItem('typingTester:theme') || 'dark';
+          var html = document.documentElement;
+          if (theme === 'dark') {
+            html.setAttribute('data-theme', 'dark');
+            html.classList.add('dark');
+          } else {
+            html.removeAttribute('data-theme');
+            html.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
