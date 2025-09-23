@@ -53,6 +53,13 @@ body {
   background: rgb(var(--bg));
 }
 
+/* Remove default list styling */
+ul, ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 @keyframes blink {
   0%, 50% { opacity: 1; }
   51%, 100% { opacity: 0.3; }
@@ -148,6 +155,82 @@ html[data-theme="dark"] .surface-strong { background: rgba(255,255,255,0.06); bo
   line-height: 1.2;
   letter-spacing: -0.025em;
 }
+
+/* Micro typography */
+.text-2xs { font-size: 0.625rem; line-height: 0.95rem; }
+
+/* Design system additions */
+.panel { border-radius: 0.75rem; border: 1px solid rgba(226,232,240,0.6); background: rgba(255,255,255,0.75); backdrop-filter: blur(8px); box-shadow: 0 2px 4px rgba(15,23,42,0.04); }
+html[data-theme="dark"] .panel { border-color: rgba(51,65,85,0.7); background: rgba(15,23,42,0.5); }
+.panel-tight { padding: 1.25rem; }
+.panel-roomy { padding: 2rem; }
+.panel-header { display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; }
+.panel-title { font-size:0.75rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#334155; }
+html[data-theme="dark"] .panel-title { color:#cbd5e1; }
+.panel-sub { font-size:0.75rem; color:#64748b; }
+html[data-theme="dark"] .panel-sub { color:#94a3b8; }
+.kpi-badge { padding:1rem 1.25rem; border-radius:0.75rem; border:1px solid rgba(226,232,240,0.6); background:rgba(255,255,255,0.6); display:flex; flex-direction:column; align-items:flex-start; gap:0; }
+html[data-theme="dark"] .kpi-badge { border-color:rgba(51,65,85,0.65); background:rgba(30,41,59,0.55); }
+.kpi-badge-label { font-size:0.75rem; font-weight:500; letter-spacing:0.05em; color:#64748b; }
+html[data-theme="dark"] .kpi-badge-label { color:#94a3b8; }
+.kpi-badge-value { font-size:1.25rem; font-weight:600; color:#0f172a; }
+html[data-theme="dark"] .kpi-badge-value { color:#e2e8f0; }
+.divider-h { width:1px; align-self:stretch; background:#e2e8f0; }
+html[data-theme="dark"] .divider-h { background:#334155; }
+.grid-auto-fill { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1rem; }
+
+/* Consistent typography scale */
+.text-micro { font-size: 0.6875rem; line-height: 1rem; letter-spacing: .04em; }
+.text-small { font-size: 0.8125rem; line-height: 1.2rem; }
+.text-title { font-size: 1.125rem; font-weight:600; letter-spacing:-.01em; }
+.text-metric { font-size: 2.25rem; font-weight: 600; letter-spacing: -.03em; }
+
+/* KPI bar background */
+.kpi-track { background: linear-gradient(90deg, rgba(148,163,184,0.18), rgba(148,163,184,0.08)); }
+.kpi-bar { transition: width .5s cubic-bezier(.4,0,.2,1); height: 6px; border-radius: 4px; }
+
+/* Mini metric bars for profile panel */
+.mini-metric { display:flex; flex-direction:column; gap:8px; padding:0.75rem 0; }
+.mini-metric-label { display:flex; justify-content:space-between; font-size:0.875rem; font-weight:500; letter-spacing:.05em; text-transform:uppercase; color:#64748b; }
+html[data-theme="dark"] .mini-metric-label { color:#94a3b8; }
+.mini-metric-track { height:10px; width:100%; border-radius:6px; background:linear-gradient(90deg, rgba(148,163,184,0.25), rgba(148,163,184,0.12)); position:relative; overflow:hidden; }
+.mini-metric-fill { position:absolute; inset:0; width:0; border-radius:6px; background:linear-gradient(90deg, var(--mm-from), var(--mm-to)); box-shadow:0 0 0 1px rgba(255,255,255,0.15) inset; transition:width .6s cubic-bezier(.4,0,.2,1); }
+.mini-metric-target { position:absolute; top:-2px; bottom:-2px; width:2px; background:rgba(255,255,255,0.7); box-shadow:0 0 0 1px rgba(0,0,0,0.15); }
+html[data-theme="dark"] .mini-metric-target { background:rgba(255,255,255,0.4); }
+
+/* Tip card grid & badges */
+.tip-grid { display:grid; gap:1rem; }
+@media (min-width: 960px) { .tip-grid { grid-template-columns:1fr 1fr; } }
+.tip { position:relative; border:1px solid rgba(226,232,240,0.65); background:rgba(255,255,255,0.65); border-radius:0.75rem; padding:0.9rem 0.95rem 0.9rem 0.95rem; display:flex; flex-direction:column; gap:0.55rem; }
+html[data-theme="dark"] .tip { border-color:rgba(51,65,85,0.7); background:rgba(30,41,59,0.55); }
+.tip:hover { border-color:rgba(148,163,184,0.9); }
+html[data-theme="dark"] .tip:hover { border-color:rgba(100,116,139,0.9); }
+.tip-head { display:flex; align-items:center; gap:0.5rem; }
+.tip-rank { font-family:'JetBrains Mono',monospace; font-size:0.65rem; padding:2px 6px; border-radius:0.5rem; background:linear-gradient(135deg,#e2e8f0,#f1f5f9); color:#334155; font-weight:600; letter-spacing:.05em; }
+html[data-theme="dark"] .tip-rank { background:linear-gradient(135deg,#1e293b,#334155); color:#cbd5e1; }
+.tip-title { font-size:0.8rem; font-weight:600; color:#0f172a; line-height:1.15; }
+html[data-theme="dark"] .tip-title { color:#e2e8f0; }
+.tip-meta { display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center; }
+.badge-chip { font-size:0.55rem; letter-spacing:.06em; font-weight:600; padding:3px 6px; border-radius:0.5rem; text-transform:uppercase; background:rgba(148,163,184,0.15); color:#475569; }
+html[data-theme="dark"] .badge-chip { background:rgba(100,116,139,0.25); color:#cbd5e1; }
+.badge-priority-high { background:#fee2e2; color:#b91c1c; }
+.badge-priority-medium { background:#ffedd5; color:#9a3412; }
+.badge-priority-low { background:#dcfce7; color:#166534; }
+html[data-theme="dark"] .badge-priority-high { background:#7f1d1d; color:#fecaca; }
+html[data-theme="dark"] .badge-priority-medium { background:#7c2d12; color:#fed7aa; }
+html[data-theme="dark"] .badge-priority-low { background:#064e3b; color:#86efac; }
+.tip-desc { font-size:0.68rem; line-height:1.2rem; color:#475569; letter-spacing:.01em; }
+html[data-theme="dark"] .tip-desc { color:#94a3b8; }
+.tip-desc strong { color:#0f172a; }
+html[data-theme="dark"] .tip-desc strong { color:#e2e8f0; }
+.tip-impact-track { height:4px; border-radius:4px; background:linear-gradient(90deg, rgba(148,163,184,0.3), rgba(148,163,184,0.15)); position:relative; overflow:hidden; }
+.tip-impact-fill { position:absolute; inset:0; width:0; background:linear-gradient(90deg,var(--impact-from),var(--impact-to)); border-radius:4px; transition:width .6s cubic-bezier(.4,0,.2,1); }
+
+/* Left accent bar utility */
+.accent-bar { position:absolute; inset-block:0; left:0; width:4px; border-top-left-radius:0.75rem; border-bottom-left-radius:0.75rem; background:linear-gradient(180deg,var(--ab-from),var(--ab-to)); }
+
+/* Focus state improvements */
+input:focus-visible { outline: 2px solid rgba(59,130,246,0.6); outline-offset: 2px; }
 
 .heading-2 {
   font-size: 1.875rem;

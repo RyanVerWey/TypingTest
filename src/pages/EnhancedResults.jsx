@@ -2,7 +2,7 @@
 // FILE: src/pages/EnhancedResults.jsx  
 // Professional dashboard-style results page
 // ================================
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -12,12 +12,11 @@ import {
 import { exportPNG } from "../shared/exporters.js";
 import { DIFFICULTY_LABELS } from "../lib/passage.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faChartLine, faBolt, faKeyboard, 
-  faBullseye, faLightbulb, faDownload,
-  faPlay, faTachometerAlt,
-  faChartBar, faChartPie,
-  faCheckCircle, faUser, faRocket
+import {
+  faChartLine, faBolt, faKeyboard,
+  faBullseye, faDownload, faPlay, faTachometerAlt,
+  faChartBar, faChartPie, faCheckCircle, faUser, faRocket, faLightbulb,
+  faExclamationTriangle
 } from "@fortawesome/free-solid-svg-icons";
 
 const pct = (part, whole) => (whole ? Math.round((part / whole) * 100) : 0);
@@ -48,37 +47,32 @@ export default function EnhancedResults() {
     );
   }
 
-// Compact horizontal metric chart (0-100) with target marker
+// KPI Row (kept Recharts as requested)
 function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', target }) {
-  const data = [{ name: title, pct: Math.max(0, Math.min(100, Math.round(value))) }];
-  const tickStyle = { fontSize: 12, fill: '#94a3b8' };
-  const labelColor = { color: '#0f172a' };
-
+  const data = useMemo(() => [{ name: title, pct: Math.max(0, Math.min(100, Math.round(value))) }], [title, value]);
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3">
-      <div className="flex items-center justify-between mb-2">
+    <div className="panel panel-tight flex flex-col gap-1">
+      <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
-          <FontAwesomeIcon icon={icon} style={{ color }} />
-          <span className="font-semibold" style={labelColor}>{title}</span>
+          <span className="w-6 h-6 flex items-center justify-center rounded-md" style={{ background: color + '22' }}>
+            <FontAwesomeIcon icon={icon} style={{ color }} className="text-xs" />
+          </span>
+          <span className="text-small font-medium text-slate-700 dark:text-slate-300">{title}</span>
         </div>
-        <div className="text-sm font-medium" style={labelColor}>{displayValue}</div>
+        <div className="text-xs font-semibold text-slate-800 dark:text-slate-100 tabular-nums">{displayValue}</div>
       </div>
-      <div style={{ width: '100%', height: 36 }}>
+      <div style={{ width: '100%', height: 38 }} className="-mx-1">
         <ResponsiveContainer>
-          <BarChart data={data} layout="vertical" margin={{ top: 0, right: 8, left: 8, bottom: 0 }}>
-            <CartesianGrid horizontal={false} stroke="#eef2f7" />
+          <BarChart data={data} layout="vertical" margin={{ top: 0, right: 6, left: 6, bottom: 0 }}>
             <XAxis type="number" hide domain={[0, 100]} />
-            <YAxis type="category" dataKey="name" tick={tickStyle} width={0} />
-            <Tooltip formatter={(v) => [`${v}%`, title]} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
-            {typeof target === 'number' && (
-              <ReferenceLine x={target} stroke="#ef4444" strokeDasharray="4 4" />
-            )}
-            <Bar dataKey="pct" radius={[6, 6, 6, 6]} fill={color} />
+            <YAxis type="category" dataKey="name" hide />
+            {typeof target === 'number' && <ReferenceLine x={target} stroke="#475569" strokeDasharray="3 3" />}
+            <Bar dataKey="pct" radius={[5,5,5,5]} fill={color} background={{ fill: 'rgba(148,163,184,0.18)' }} />
           </BarChart>
         </ResponsiveContainer>
       </div>
       {typeof target === 'number' && (
-        <div className="text-[10px] text-gray-500 mt-1">Target: {title === 'Speed' ? `${target} WPM` : `${target}%`}</div>
+        <div className="text-micro text-slate-500 dark:text-slate-400">Target: {title === 'Speed' ? `${target} WPM` : `${target}%`}</div>
       )}
     </div>
   );
@@ -123,68 +117,41 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
   ];
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6" ref={resultsRef} data-export-root>
-      
-      {/* Header Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Typing Performance Dashboard</h1>
-            <p className="text-gray-600">
-              Test completed on {new Date(date).toLocaleDateString()} • 
-              Difficulty: <span className="font-medium">{DIFFICULTY_LABELS?.[difficulty] || difficulty || "Standard"}</span>
-            </p>
+    <div className="max-w-7xl mx-auto p-6 space-y-8" ref={resultsRef} data-export-root>
+      {/* Header */}
+      <div className="panel panel-roomy flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-800 dark:text-slate-100">Results Overview</h1>
+          <div className="flex flex-wrap items-center gap-3 text-small text-slate-600 dark:text-slate-400">
+            <span>{new Date(date).toLocaleDateString()}</span>
+            <span className="opacity-40">•</span>
+            <span>Difficulty: <span className="font-medium text-slate-800 dark:text-slate-200">{DIFFICULTY_LABELS?.[difficulty] || difficulty || 'Standard'}</span></span>
+            <span className="opacity-40">•</span>
+            <span className="tabular-nums">{wpm} WPM</span>
+            <span className="opacity-40">/</span>
+            <span className="tabular-nums">{accuracy}% Accuracy</span>
           </div>
-          <div className="flex gap-3">
-            <button onClick={() => exportPNG(resultsRef.current)} className="btn btn-soft">
-              <FontAwesomeIcon icon={faDownload} className="mr-2" />
-              Export PNG
-            </button>
-            <button onClick={() => nav("/")} className="btn btn-primary">
-              <FontAwesomeIcon icon={faPlay} className="mr-2" />
-              New Test
-            </button>
-          </div>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={() => exportPNG(resultsRef.current)} className="btn btn-soft h-10 px-4 text-sm">
+            <FontAwesomeIcon icon={faDownload} className="mr-2" />Export PNG
+          </button>
+            <button onClick={() => nav('/')} className="btn btn-primary h-10 px-5 text-sm">
+            <FontAwesomeIcon icon={faPlay} className="mr-2" />New Test
+          </button>
         </div>
       </div>
 
-      {/* KPI Row Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-        <MetricRowChart
-          icon={faBolt}
-          title="Speed"
-          value={(wpm / 80) * 100}
-          displayValue={`${wpm} WPM`}
-          color="#3B82F6"
-          target={80}
-        />
-        <MetricRowChart
-          icon={faCheckCircle}
-          title="Accuracy"
-          value={enhancedAccuracy?.adjusted || accuracy}
-          displayValue={`${enhancedAccuracy?.adjusted || accuracy}%`}
-          color="#22C55E"
-          target={95}
-        />
-        <MetricRowChart
-          icon={faKeyboard}
-          title="Keystrokes"
-          value={(keystrokes / 1000) * 100}
-          displayValue={`${keystrokes} (${errors} errors)`}
-          color="#8B5CF6"
-        />
-        <MetricRowChart
-          icon={faTachometerAlt}
-          title="Efficiency"
-          value={Math.round(((keystrokes - errors) / Math.max(keystrokes, 1)) * 100)}
-          displayValue={`${Math.round(((keystrokes - errors) / Math.max(keystrokes, 1)) * 100)}%`}
-          color="#F59E0B"
-          target={98}
-        />
-  </div>
+      {/* KPI Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <MetricRowChart icon={faBolt} title="Speed" value={(wpm / 80) * 100} displayValue={`${wpm} WPM`} color="#3B82F6" target={80} />
+        <MetricRowChart icon={faCheckCircle} title="Accuracy" value={enhancedAccuracy?.adjusted || accuracy} displayValue={`${enhancedAccuracy?.adjusted || accuracy}%`} color="#22C55E" target={95} />
+        <MetricRowChart icon={faKeyboard} title="Keystrokes" value={(keystrokes / 1000) * 100} displayValue={`${keystrokes} (${errors} errors)`} color="#8B5CF6" />
+        <MetricRowChart icon={faTachometerAlt} title="Efficiency" value={Math.round(((keystrokes - errors) / Math.max(keystrokes, 1)) * 100)} displayValue={`${Math.round(((keystrokes - errors) / Math.max(keystrokes, 1)) * 100)}%`} color="#F59E0B" target={98} />
+      </div>
 
-      {/* Charts Grid */}
-  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+      {/* Analytics Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Main Performance Chart - Spans 2 columns */}
         <div className="lg:col-span-2">
@@ -262,8 +229,8 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
         </ChartCard>
       </div>
 
-      {/* Secondary Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  {/* Secondary Charts */}
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Character Type Performance */}
         <ChartCard title="Character Accuracy" icon={faChartBar}>
@@ -322,7 +289,7 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
         </ChartCard>
       </div>
 
-      {/* Insights Section */}
+      {/* Insight & Improvement Plan */}
       {analytics && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <InsightCard profile={analytics.personality} />
@@ -333,53 +300,17 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
   );
 }
 
-// Clean stat card component
-function StatCard({ icon, label, value, subtitle, status = "idle" }) {
-  const statusColors = {
-    success: '#22c55e',
-    warning: '#f59e0b', 
-    error: '#ef4444',
-    idle: '#64748b'
-  };
-
-  return (
-    <div className="rounded-lg p-6 glass" style={{ borderColor: '#e2e8f0' }}>
-      <div className="flex items-center gap-3 mb-3">
-        <FontAwesomeIcon 
-          icon={icon} 
-          className="text-xl"
-          style={{ color: statusColors[status] }}
-        />
-        <span className="text-sm font-medium text-gray-600">
-          {label}
-        </span>
-      </div>
-      <div 
-        className="text-3xl font-bold mb-2"
-        style={{ color: statusColors[status] }}
-      >
-        {value}
-      </div>
-      {subtitle && (
-        <div className="text-sm text-gray-500">
-          {subtitle}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Clean chart card wrapper - keeping for compatibility
+// Unified chart card wrapper
 function ChartCard({ title, icon, children }) {
   return (
-    <div className="rounded-lg p-6 glass" style={{ borderColor: '#e2e8f0' }}>
-      <div className="flex items-center gap-3 mb-6">
-        <FontAwesomeIcon icon={icon} className="text-xl text-blue-600" />
-        <h3 className="text-xl font-semibold text-gray-800">
-          {title}
-        </h3>
+    <div className="panel panel-tight flex flex-col gap-4">
+      <div className="flex items-center gap-2 mb-1">
+        <span className="w-7 h-7 rounded-md flex items-center justify-center bg-blue-600/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400">
+          <FontAwesomeIcon icon={icon} className="text-xs" />
+        </span>
+        <h3 className="panel-title m-0">{title}</h3>
       </div>
-      {children}
+      <div className="flex-1 min-h-[200px]">{children}</div>
     </div>
   );
 }
@@ -642,93 +573,137 @@ function CustomTooltip({ active, payload, label }) {
   return null;
 }
 
-// Dashboard Components
-// (Old ProgressBar removed in favor of MetricRowChart)
+const InsightCard = ({ profile }) => {
+  if (!profile) return null;
+  const { type = 'Adaptive Typist', traits = [], keyFindings = [], metrics = {} } = profile;
 
-const MetricCard = ({ icon, title, value, unit, subtitle, color, trend }) => {
-  const colorClasses = {
-    blue: "text-blue-600",
-    green: "text-green-600", 
-    purple: "text-purple-600",
-    orange: "text-orange-600",
-    red: "text-red-600"
+  const METRIC_ITEMS = [
+    { label: 'CPM', value: metrics.avgSpeed || 0, color: '#2563eb' },
+    { label: 'ACC', value: (metrics.accuracy || 0) + '%', color: '#16a34a' },
+    { label: 'CONS', value: (metrics.rhythmConsistency || 0) + '%', color: '#7e22ce' },
+    { label: 'CORR', value: (metrics.correctionRate || 0) + '%', color: '#d97706' }
+  ];
+
+  // Mini bar config
+  const barMap = [
+    { key: 'avgSpeed', label: 'Speed', from: '#3b82f6', to: '#2563eb', value: metrics.avgSpeed || 0, max: 120, target: 80, format: v => `${v}` },
+    { key: 'accuracy', label: 'Accuracy', from: '#16a34a', to: '#15803d', value: metrics.accuracy || 0, max: 100, target: 95, format: v => `${v}%` },
+    { key: 'rhythmConsistency', label: 'Consistency', from: '#7e22ce', to: '#6d28d9', value: metrics.rhythmConsistency || 0, max: 100, target: 85, format: v => `${v}%` },
+    { key: 'correctionRate', label: 'Correction', from: '#d97706', to: '#b45309', value: metrics.correctionRate != null ? 100 - metrics.correctionRate : 0, max: 100, target: 90, format: v => `${v}%` }
+  ];
+
+  // Simple trait explanation mapping (derive short meaning fragments)
+  // Classification + richer explanation (encouraging tone)
+  const classifyTrait = (t) => {
+    const l = t.toLowerCase();
+  const isGrowth = /variable|inconsistent|pause|interrupt|challenge|max consecutive errors|problem|improve|break error/i.test(l);
+    let base;
+    if (l.includes('accuracy')) base = `Consistently prioritizes precision (Adj. Accuracy ${metrics.accuracy ?? '--'}%)`;
+    else if (l.includes('correction')) base = `Actively fixes mistakes (Correction rate ${metrics.correctionRate ?? '--'}%)`;
+    else if (l.includes('consistency') || l.includes('timing') || l.includes('interval')) base = `Keystroke timing reflects current rhythm (Consistency ${metrics.rhythmConsistency ?? '--'}%)`;
+    else if (l.includes('variable')) base = `Speed shifts with passage difficulty – adaptability is present but rhythm can tighten`;
+    else if (l.includes('pause')) base = `Uses brief pauses for planning (Pause freq ${metrics.pauseFrequency ?? '--'}/50 keys)`;
+    else if (l.includes('flow')) base = `Maintains forward momentum with minimal context switching`;
+    else if (l.includes('errors')) base = `Recovers from mistakes quickly (Max consecutive ${metrics.maxConsecutiveErrors ?? '--'})`;
+    else if (l.includes('speed') || l.includes('cpm')) base = `Generates solid symbol throughput (CPM ${metrics.avgSpeed ?? '--'})`;
+    else base = 'Observed live-session behavioral pattern';
+
+    if (isGrowth) {
+      return {
+        status: 'growth',
+        color: '#d97706',
+        icon: faExclamationTriangle,
+        label: 'Growth Area',
+        explanation: base + '. Opportunity: apply short (30–45s) rhythm drills & deliberate pacing to convert variance into sustainable speed.'
+      };
+    }
+    return {
+      status: 'strength',
+      color: '#16a34a',
+      icon: faCheckCircle,
+      label: 'Strength',
+      explanation: base + '. Keep reinforcing this by layering small speed bursts without letting quality slip.'
+    };
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center justify-between mb-4">
-        <FontAwesomeIcon 
-          icon={icon} 
-          className={`text-2xl ${colorClasses[color] || "text-gray-600"}`}
-        />
-        {trend && (
-          <span className={`text-xs px-2 py-1 rounded-full ${
-            trend === "up" ? "bg-green-100 text-green-700" :
-            trend === "down" ? "bg-red-100 text-red-700" :
-            "bg-blue-100 text-blue-700"
-          }`}>
-            {trend === "up" ? "↗" : trend === "down" ? "↘" : "→"}
-          </span>
-        )}
-      </div>
-      <div>
-        <h3 className="text-sm font-medium text-gray-600 mb-1">{title}</h3>
-        <div className="flex items-baseline gap-1">
-          <span className="text-3xl font-bold text-gray-900">{value}</span>
-          {unit && <span className="text-lg text-gray-500">{unit}</span>}
+    <div className="panel panel-roomy relative overflow-hidden" style={{ '--ab-from':'#3b82f6', '--ab-to':'#6366f1' }}>
+      <div className="flex flex-col gap-8 relative">
+        {/* Header */}
+        <div className="flex items-center justify-between flex-wrap gap-6 pb-4 border-b border-slate-200/50 dark:border-slate-700/50">
+          <div className="flex items-center gap-4 min-w-[240px]">
+            <div className="h-12 flex items-center leading-tight">
+              <h3 className="text-title text-slate-800 dark:text-slate-100 mb-0 leading-tight">
+                <FontAwesomeIcon icon={faUser} className="text-slate-600 dark:text-slate-200 text-[17px] mr-3" />
+                Personality Profile: <span className="font-semibold">{type}</span>
+              </h3>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 w-full sm:w-auto">
+            {METRIC_ITEMS.map(m => (
+              <div key={m.label} className="kpi-badge items-center text-center !px-4 !py-3 min-w-[90px]">
+                <span className="kpi-badge-label tracking-wide text-xs">{m.label}</span>
+                <span className="kpi-badge-value text-xl" style={{ color: m.color }}>{m.value}</span>
+              </div>
+            ))}
+          </div>
         </div>
-        {subtitle && <p className="text-xs text-gray-500 mt-1">{subtitle}</p>}
-      </div>
-    </div>
-  );
-};
 
-const InsightCard = ({ profile }) => {
-  if (!profile) return null;
-  
-  const { type = "Adaptive Typist", traits = [], keyFindings = [] } = profile;
-  
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center gap-3 mb-4">
-        <FontAwesomeIcon icon={faUser} className="text-lg text-blue-600" />
-        <h3 className="text-lg font-semibold text-gray-900">Typing Profile</h3>
-      </div>
-      
-      <div className="space-y-4">
-        <div>
-          <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-            {type}
-          </span>
+        {/* Mini Metrics */}
+        <div className="grid grid-cols-2 gap-8">
+          {barMap.map(bar => {
+            const pct = Math.min(100, Math.round((bar.value / bar.max) * 100));
+            const targetPct = Math.min(100, Math.round((bar.target / bar.max) * 100));
+            return (
+              <div key={bar.key} className="mini-metric py-2" style={{ '--mm-from': bar.from, '--mm-to': bar.to }}>
+                <div className="mini-metric-label text-sm mb-2"><span>{bar.label}</span><span className="tabular-nums font-semibold">{bar.format(bar.value)}</span></div>
+                <div className="mini-metric-track h-3">
+                  <div className="mini-metric-fill" style={{ width: pct + '%' }} />
+                  <div className="mini-metric-target" style={{ left: targetPct + '%' }} />
+                </div>
+              </div>
+            );
+          })}
         </div>
-        
-        {traits.length > 0 && (
-          <div>
-            <h4 className="font-medium text-gray-900 mb-2">Characteristics</h4>
-            <ul className="space-y-1">
-              {traits.slice(0, 3).map((trait, index) => (
-                <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">•</span>
-                  {trait}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        
-        {keyFindings.length > 0 && (
-          <div>
-            <h4 className="font-medium text-gray-900 mb-2">Key Insights</h4>
-            <ul className="space-y-1">
-              {keyFindings.slice(0, 2).map((finding, index) => (
-                <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
-                  <FontAwesomeIcon icon={faLightbulb} className="text-yellow-500 mt-0.5 text-xs" />
-                  {finding}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+
+        <div className="grid md:grid-cols-2 gap-10">
+          {traits.length > 0 && (
+            <div className="space-y-4">
+              <h4 className="text-xs font-semibold tracking-wide text-slate-500 dark:text-slate-400">CORE TRAITS</h4>
+              <div className="grid md:grid-cols-1 gap-4">
+                {traits.slice(0, 6).map((t,i) => {
+                  const info = classifyTrait(t);
+                  return (
+                    <div key={i} className="group p-3 rounded-lg bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-colors ml-4">
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-[13px] font-semibold text-slate-800 dark:text-slate-100 leading-snug mb-0">{t}</p>
+                          <span className="text-[10px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded-md" style={{ background: info.color + '1a', color: info.color }}>{info.label}</span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed pr-1">{info.explanation}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          {keyFindings.length > 0 && (
+            <div className="space-y-4">
+              <h4 className="text-xs font-semibold tracking-wide text-slate-500 dark:text-slate-400">DATA INSIGHTS</h4>
+              <ul className="grid sm:grid-cols-2 gap-4">
+                {keyFindings.slice(0,5).map((f,i) => (
+                  <li key={i} className="flex items-start gap-3 text-small text-slate-600 dark:text-slate-300">
+                    <span className="w-5 h-5 rounded-lg flex items-center justify-center bg-slate-200/60 dark:bg-slate-700/50 text-[10px] text-slate-600 dark:text-slate-300 mt-0.5 shadow-sm">
+                      <FontAwesomeIcon icon={faChartLine} />
+                    </span>
+                    <span className="leading-relaxed pr-2">{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -736,47 +711,78 @@ const InsightCard = ({ profile }) => {
 
 const TipsCard = ({ tips }) => {
   if (!tips?.length) return null;
-  
+
+  const CATEGORY_META = {
+    SPEED:      { color: '#2563eb', icon: faRocket, label: 'Speed' },
+    ACCURACY:   { color: '#16a34a', icon: faBullseye, label: 'Accuracy' },
+    EFFICIENCY: { color: '#7e22ce', icon: faChartBar, label: 'Efficiency' },
+    FLOW:       { color: '#d97706', icon: faChartLine, label: 'Flow' },
+    ADVANCED:   { color: '#4f46e5', icon: faLightbulb, label: 'Advanced' },
+    ERGONOMICS: { color: '#334155', icon: faUser, label: 'Ergonomics' },
+    GENERAL:    { color: '#475569', icon: faLightbulb, label: 'General' }
+  };
+
+  // legacy helpers removed in refactor
+
+  // Highlight numeric / quantitative tokens inside description for visual hierarchy
+  const formatDescription = (text) => {
+    if (!text) return null;
+    const regex = /(\b\d+\.?\d*%?|\b\d+ms\b|\b<\d+ms\b|\b\d+ CPM\b|\b\d+ WPM\b|\b\d+ errors?\b|\b\d+ keystrokes?\b)/gi;
+    const parts = text.split(regex);
+    return parts.map((part, i) => {
+      if (regex.test(part)) {
+        return (
+          <span key={i} className="font-semibold text-slate-800 dark:text-slate-200 tracking-tight">
+            {part}
+          </span>
+        );
+      }
+      return <span key={i}>{part}</span>;
+    });
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center gap-3 mb-4">
-        <FontAwesomeIcon icon={faRocket} className="text-lg text-green-600" />
-        <h3 className="text-lg font-semibold text-gray-900">Improvement Tips</h3>
+    <div className="panel panel-roomy relative" style={{ '--ab-from':'#1e3a8a', '--ab-to':'#6366f1' }}>
+      <div className="flex items-center justify-between flex-wrap gap-6 mb-6 pb-4 border-b border-slate-200/50 dark:border-slate-700/50">
+        <div className="flex items-center gap-4 min-w-[260px]">
+          <div className="h-12 flex items-center leading-tight">
+            <h3 className="text-title text-slate-800 dark:text-slate-100 mb-0 leading-tight">
+              <FontAwesomeIcon icon={faRocket} className="text-blue-600 dark:text-blue-300 text-[17px] mr-3" />
+              Performance Enhancement Plan
+            </h3>
+          </div>
+        </div>
+        <div className="hidden md:flex gap-2 flex-wrap items-center">
+          {Array.from(new Set(tips.map(t => (typeof t === 'object' ? t.category : 'GENERAL')))).slice(0,6).map(cat => {
+            const meta = CATEGORY_META[cat] || CATEGORY_META.GENERAL;
+            return <span key={cat} className="badge-chip" style={{ background: meta.color + '22', color: meta.color }}>{cat}</span>;
+          })}
+        </div>
       </div>
-      
-      <div className="space-y-3">
-        {tips.slice(0, 4).map((tip, index) => {
-          // Handle both string tips and object tips
-          const isObject = typeof tip === 'object' && tip !== null;
-          const displayText = isObject ? (tip.description || tip.title || 'Improvement tip') : tip;
-          const category = isObject ? tip.category : '';
-          const priority = isObject ? tip.priority : '';
-          
+
+      <div className="tip-grid">
+        {tips.map((raw, idx) => {
+          const tip = typeof raw === 'object' && raw !== null ? raw : { title: raw, description: '', category: 'GENERAL', priority: 'low' };
+          const meta = CATEGORY_META[tip.category] || CATEGORY_META.GENERAL;
+          const priorityClass = tip.priority === 'high' ? 'badge-priority-high' : tip.priority === 'medium' ? 'badge-priority-medium' : 'badge-priority-low';
+          const impactPct = tip.impact ? Math.min(100, Math.max(5, tip.impact)) : (tip.priority === 'high' ? 70 : tip.priority === 'medium' ? 45 : 25);
           return (
-            <div key={index} className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">
-                {index + 1}
+            <div key={idx} className="tip" style={{ '--impact-from': meta.color, '--impact-to': meta.color }}>
+              <div className="tip-head">
+                <span className="tip-rank">{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}</span>
+                <span className="tip-title" style={{ background: `linear-gradient(90deg, ${meta.color} 0%, ${meta.color}cc 100%)`, WebkitBackgroundClip: 'text', color: 'transparent' }}>{tip.title}</span>
               </div>
-              <div className="flex-1 min-w-0">
-                {category && (
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
-                      {category}
-                    </span>
-                    {priority && (
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                        priority === 'high' ? 'bg-red-100 text-red-700' :
-                        priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}>
-                        {priority}
-                      </span>
-                    )}
-                  </div>
-                )}
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  {displayText}
-                </p>
+              <div className="tip-meta">
+                <span className={`badge-chip ${priorityClass}`}>{tip.priority} priority</span>
+                <span className="badge-chip" style={{ background: meta.color + '22', color: meta.color }}>{meta.label}</span>
+                {tip.metric && <span className="badge-chip" style={{ background: 'rgba(148,163,184,0.18)' }}>Improves {tip.metric}</span>}
+                {tip.evidence && <span className="badge-chip font-mono" style={{ fontSize:'0.5rem' }}>{tip.evidence}</span>}
+              </div>
+              {tip.description && (
+                <p className="tip-desc">{formatDescription(tip.description)}</p>
+              )}
+              <div className="tip-impact-track" aria-label="Estimated impact potential">
+                <div className="tip-impact-fill" style={{ width: impactPct + '%' }} />
               </div>
             </div>
           );
