@@ -117,33 +117,35 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
   ];
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8" ref={resultsRef} data-export-root>
+    <div className="max-w-7xl mx-auto p-8 space-y-12" ref={resultsRef} data-export-root>
       {/* Header */}
-      <div className="panel panel-roomy flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-800 dark:text-slate-100">Results Overview</h1>
-          <div className="flex flex-wrap items-center gap-3 text-small text-slate-600 dark:text-slate-400">
-            <span>{new Date(date).toLocaleDateString()}</span>
-            <span className="opacity-40">•</span>
-            <span>Difficulty: <span className="font-medium text-slate-800 dark:text-slate-200">{DIFFICULTY_LABELS?.[difficulty] || difficulty || 'Standard'}</span></span>
-            <span className="opacity-40">•</span>
-            <span className="tabular-nums">{wpm} WPM</span>
-            <span className="opacity-40">/</span>
-            <span className="tabular-nums">{accuracy}% Accuracy</span>
+      <div className="panel panel-roomy">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+          <div className="space-y-3">
+            <h1 className="text-4xl font-semibold tracking-tight text-slate-800 dark:text-slate-100">Results Overview</h1>
+            <div className="flex flex-wrap items-center gap-4 text-base text-slate-600 dark:text-slate-400">
+              <span className="font-medium">{new Date(date).toLocaleDateString()}</span>
+              <span className="opacity-40">•</span>
+              <span>Difficulty: <span className="font-semibold text-slate-800 dark:text-slate-200">{DIFFICULTY_LABELS?.[difficulty] || difficulty || 'Standard'}</span></span>
+              <span className="opacity-40">•</span>
+              <span className="tabular-nums font-semibold text-blue-600 dark:text-blue-400">{wpm} WPM</span>
+              <span className="opacity-40">/</span>
+              <span className="tabular-nums font-semibold text-green-600 dark:text-green-400">{accuracy}% Accuracy</span>
+            </div>
           </div>
-        </div>
-        <div className="flex gap-3">
-          <button onClick={() => exportPNG(resultsRef.current)} className="btn btn-soft h-10 px-4 text-sm">
-            <FontAwesomeIcon icon={faDownload} className="mr-2" />Export PNG
-          </button>
-            <button onClick={() => nav('/')} className="btn btn-primary h-10 px-5 text-sm">
-            <FontAwesomeIcon icon={faPlay} className="mr-2" />New Test
-          </button>
+          <div className="flex gap-4">
+            <button onClick={() => exportPNG(resultsRef.current)} className="btn btn-soft h-12 px-6 text-base font-medium">
+              <FontAwesomeIcon icon={faDownload} className="mr-3" />Export PNG
+            </button>
+              <button onClick={() => nav('/')} className="btn btn-primary h-12 px-8 text-base font-medium">
+              <FontAwesomeIcon icon={faPlay} className="mr-3" />New Test
+            </button>
+          </div>
         </div>
       </div>
 
       {/* KPI Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <MetricRowChart icon={faBolt} title="Speed" value={(wpm / 80) * 100} displayValue={`${wpm} WPM`} color="#3B82F6" target={80} />
         <MetricRowChart icon={faCheckCircle} title="Accuracy" value={enhancedAccuracy?.adjusted || accuracy} displayValue={`${enhancedAccuracy?.adjusted || accuracy}%`} color="#22C55E" target={95} />
         <MetricRowChart icon={faKeyboard} title="Keystrokes" value={(keystrokes / 1000) * 100} displayValue={`${keystrokes} (${errors} errors)`} color="#8B5CF6" />
@@ -151,147 +153,171 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
       </div>
 
       {/* Analytics Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Main Performance Chart - Spans 2 columns */}
         <div className="lg:col-span-2">
-          <ChartCard title="Performance Over Time" icon={faChartLine}>
-            <ResponsiveContainer width="100%" height={350}>
-              <ComposedChart data={timelineData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis 
-                  dataKey="time" 
-                  tickFormatter={(t) => `${t}s`}
-                  fontSize={12}
-                  stroke="#64748b"
-                />
-                <YAxis 
-                  yAxisId="wpm"
-                  orientation="left"
-                  fontSize={12}
-                  stroke="#64748b"
-                />
-                <YAxis 
-                  yAxisId="accuracy"
-                  orientation="right"
-                  domain={[0, 100]}
-                  tickFormatter={(v) => `${v}%`}
-                  fontSize={12}
-                  stroke="#64748b"
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Area
-                  yAxisId="wpm"
-                  type="monotone"
-                  dataKey="wpm"
-                  fill="#3B82F6"
-                  fillOpacity={0.1}
-                  stroke="#3B82F6"
-                  strokeWidth={3}
-                  name="Speed (WPM)"
-                />
-                <Line
-                  yAxisId="accuracy"
-                  type="monotone"
-                  dataKey="accuracy"
-                  stroke="#22C55E"
-                  strokeWidth={2}
-                  name="Accuracy (%)"
-                  dot={{ r: 4 }}
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
+          <ChartCard 
+            title="Performance Over Time" 
+            icon={faChartLine}
+            description="Track your typing speed (WPM) and accuracy percentage throughout the entire test session. The blue area shows speed trends while the green line indicates accuracy consistency."
+          >
+            <div className="w-full h-full overflow-hidden">
+              <ResponsiveContainer width="100%" height={320}>
+                <ComposedChart data={timelineData} margin={{ top: 10, right: 20, left: 10, bottom: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis 
+                    dataKey="time" 
+                    tickFormatter={(t) => `${t}s`}
+                    fontSize={12}
+                    stroke="#64748b"
+                  />
+                  <YAxis 
+                    yAxisId="wpm"
+                    orientation="left"
+                    fontSize={12}
+                    stroke="#64748b"
+                  />
+                  <YAxis 
+                    yAxisId="accuracy"
+                    orientation="right"
+                    domain={[0, 100]}
+                    tickFormatter={(v) => `${v}%`}
+                    fontSize={12}
+                    stroke="#64748b"
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Area
+                    yAxisId="wpm"
+                    type="monotone"
+                    dataKey="wpm"
+                    fill="#3B82F6"
+                    fillOpacity={0.1}
+                    stroke="#3B82F6"
+                    strokeWidth={3}
+                    name="Speed (WPM)"
+                  />
+                  <Line
+                    yAxisId="accuracy"
+                    type="monotone"
+                    dataKey="accuracy"
+                    stroke="#22C55E"
+                    strokeWidth={2}
+                    name="Accuracy (%)"
+                    dot={{ r: 4 }}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
           </ChartCard>
         </div>
 
         {/* Keystroke Breakdown Pie Chart */}
-        <ChartCard title="Keystroke Analysis" icon={faChartPie}>
-          <ResponsiveContainer width="100%" height={350}>
-            <PieChart>
-              <Pie
-                data={keystrokeData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={110}
-                paddingAngle={5}
-                dataKey="value"
-              >
-                {keystrokeData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value) => [value, "Keystrokes"]} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+        <ChartCard 
+          title="Keystroke Analysis" 
+          icon={faChartPie}
+          description="Breakdown of all keystrokes during your session. Green represents correctly typed keys while red shows errors that required correction."
+        >
+          <div className="w-full h-full overflow-hidden">
+            <ResponsiveContainer width="100%" height={320}>
+              <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+                <Pie
+                  data={keystrokeData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={90}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {keystrokeData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip formatter={(value) => [value, "Keystrokes"]} />} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </ChartCard>
       </div>
 
   {/* Secondary Charts */}
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Character Type Performance */}
-        <ChartCard title="Character Accuracy" icon={faChartBar}>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={characterData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="type" fontSize={12} stroke="#64748b" />
-              <YAxis 
-                domain={[0, 100]} 
-                tickFormatter={(v) => `${v}%`}
-                fontSize={12}
-                stroke="#64748b"
-              />
-              <Tooltip formatter={(v) => [`${v}%`, "Accuracy"]} />
-              <Bar dataKey="accuracy" radius={[4, 4, 0, 0]}>
-                {characterData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        <ChartCard 
+          title="Character Accuracy" 
+          icon={faChartBar}
+          description="Accuracy breakdown by character type. Shows how well you handle letters (blue), numbers (green), and symbols (orange) separately."
+        >
+          <div className="w-full h-full overflow-hidden">
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={characterData} margin={{ top: 10, right: 15, left: 10, bottom: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="type" fontSize={12} stroke="#64748b" />
+                <YAxis 
+                  domain={[0, 100]} 
+                  tickFormatter={(v) => `${v}%`}
+                  fontSize={12}
+                  stroke="#64748b"
+                />
+                <Tooltip content={<CustomTooltip formatter={(v) => [`${v}%`, "Accuracy"]} />} />
+                <Bar dataKey="accuracy" radius={[4, 4, 0, 0]}>
+                  {characterData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </ChartCard>
 
         {/* Skill Assessment Radar */}
-        <ChartCard title="Skill Assessment" icon={faBullseye}>
-          <ResponsiveContainer width="100%" height={300}>
-            <RadarChart data={performanceData}>
-              <PolarGrid stroke="#e2e8f0" />
-              <PolarAngleAxis dataKey="skill" fontSize={11} />
-              <PolarRadiusAxis 
-                angle={0} 
-                domain={[0, 100]} 
-                fontSize={10}
-                stroke="#94a3b8"
-              />
-              <Radar
-                name="Current"
-                dataKey="score"
-                stroke="#6366F1"
-                fill="#6366F1"
-                fillOpacity={0.3}
-                strokeWidth={2}
-              />
-              <Radar
-                name="Target"
-                dataKey="target"
-                stroke="#e2e8f0"
-                fill="transparent"
-                strokeWidth={1}
-                strokeDasharray="3 3"
-              />
-              <Tooltip formatter={(value) => [`${Math.round(value)}%`, ""]} />
-              <Legend />
-            </RadarChart>
-          </ResponsiveContainer>
+        <ChartCard 
+          title="Skill Assessment" 
+          icon={faBullseye}
+          description="Overall typing performance across four key areas. The solid blue area shows your current scores while the dotted line indicates target benchmarks."
+        >
+          <div className="w-full h-full overflow-hidden">
+            <ResponsiveContainer width="100%" height={280}>
+              <RadarChart data={performanceData} margin={{ top: 10, right: 15, bottom: 10, left: 15 }}>
+                <PolarGrid stroke="#e2e8f0" />
+                <PolarAngleAxis dataKey="skill" fontSize={11} />
+                <PolarRadiusAxis 
+                  angle={0} 
+                  domain={[0, 100]} 
+                  fontSize={10}
+                  stroke="#94a3b8"
+                />
+                <Radar
+                  name="Current"
+                  dataKey="score"
+                  stroke="#6366F1"
+                  fill="#6366F1"
+                  fillOpacity={0.3}
+                  strokeWidth={2}
+                />
+                <Radar
+                  name="Target"
+                  dataKey="target"
+                  stroke="#e2e8f0"
+                  fill="transparent"
+                  strokeWidth={1}
+                  strokeDasharray="3 3"
+                />
+                <Tooltip content={<CustomTooltip formatter={(value) => [`${Math.round(value)}%`, ""]} />} />
+                <Legend />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
         </ChartCard>
       </div>
 
       {/* Insight & Improvement Plan */}
       {analytics && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <InsightCard profile={analytics.personality} />
           <TipsCard tips={analytics.tips} />
         </div>
@@ -301,16 +327,21 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
 }
 
 // Unified chart card wrapper
-function ChartCard({ title, icon, children }) {
+function ChartCard({ title, icon, children, description }) {
   return (
-    <div className="panel panel-tight flex flex-col gap-4">
-      <div className="flex items-center gap-2 mb-1">
-        <span className="w-7 h-7 rounded-md flex items-center justify-center bg-blue-600/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400">
-          <FontAwesomeIcon icon={icon} className="text-xs" />
-        </span>
-        <h3 className="panel-title m-0">{title}</h3>
+    <div className="panel panel-tight flex flex-col gap-4 overflow-hidden">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <span className="w-7 h-7 rounded-md flex items-center justify-center bg-blue-600/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400">
+            <FontAwesomeIcon icon={icon} className="text-xs" />
+          </span>
+          <h3 className="panel-title m-0">{title}</h3>
+        </div>
+        {description && (
+          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed pl-9">{description}</p>
+        )}
       </div>
-      <div className="flex-1 min-h-[200px]">{children}</div>
+      <div className="flex-1 min-h-[300px] w-full overflow-hidden">{children}</div>
     </div>
   );
 }
@@ -556,16 +587,42 @@ function DashboardChartCard({ title, icon, children }) {
   );
 }
 
-// Custom tooltip for composed chart
-function CustomTooltip({ active, payload, label }) {
+// Custom tooltip with strong contrast background for all charts
+function CustomTooltip({ active, payload, label, labelFormatter, formatter }) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
-        <p className="font-medium text-gray-800 mb-2">{`Time: ${label}s`}</p>
+      <div style={{ 
+        backgroundColor: '#ffffff', 
+        color: '#1e293b',
+        padding: '12px', 
+        border: '1px solid #cbd5e1', 
+        borderRadius: '8px', 
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+        fontSize: '14px',
+        fontWeight: '500'
+      }}>
+        {label && (
+          <div style={{ marginBottom: '8px', fontWeight: '600' }}>
+            {labelFormatter ? labelFormatter(label) : `Time: ${label}s`}
+          </div>
+        )}
         {payload.map((entry, index) => (
-          <p key={index} style={{ color: entry.color }} className="text-sm">
-            {`${entry.name}: ${typeof entry.value === 'number' ? Math.round(entry.value) : entry.value}${entry.name.includes('Accuracy') ? '%' : entry.name.includes('Speed') ? ' WPM' : ''}`}
-          </p>
+          <div key={index} style={{ marginBottom: '4px', display: 'flex', alignItems: 'center' }}>
+            <div style={{ 
+              width: '12px', 
+              height: '12px', 
+              backgroundColor: entry.color, 
+              borderRadius: '50%', 
+              marginRight: '8px',
+              flexShrink: 0
+            }}></div>
+            <span>
+              {formatter 
+                ? formatter(entry.value, entry.name, entry, index, payload)
+                : `${entry.name}: ${typeof entry.value === 'number' ? Math.round(entry.value) : entry.value}${entry.name.includes('Accuracy') ? '%' : entry.name.includes('Speed') ? ' WPM' : ''}`
+              }
+            </span>
+          </div>
         ))}
       </div>
     );
@@ -666,21 +723,35 @@ const InsightCard = ({ profile }) => {
           })}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-10">
+        <div className="grid md:grid-cols-2 gap-8">
           {traits.length > 0 && (
-            <div className="space-y-4">
-              <h4 className="text-xs font-semibold tracking-wide text-slate-500 dark:text-slate-400">CORE TRAITS</h4>
-              <div className="grid md:grid-cols-1 gap-4">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="h-px bg-gradient-to-r from-blue-500 to-purple-600 flex-1"></div>
+                <h4 className="text-sm font-bold tracking-wider text-slate-700 dark:text-slate-300">CORE TRAITS</h4>
+                <div className="h-px bg-gradient-to-r from-purple-600 to-blue-500 flex-1"></div>
+              </div>
+              <div className="grid gap-4">
                 {traits.slice(0, 6).map((t,i) => {
                   const info = classifyTrait(t);
                   return (
-                    <div key={i} className="group p-3 rounded-lg bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-colors ml-4">
-                      <div className="flex-1 min-w-0 space-y-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <p className="text-[13px] font-semibold text-slate-800 dark:text-slate-100 leading-snug mb-0">{t}</p>
-                          <span className="text-[10px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded-md" style={{ background: info.color + '1a', color: info.color }}>{info.label}</span>
+                    <div key={i} className="group relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 rounded-xl opacity-60"></div>
+                      <div className="relative p-4 rounded-xl hover:shadow-md transition-all duration-200">
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="flex items-center gap-1 flex-wrap">
+                            <span className="text-xs uppercase tracking-wider font-bold px-3 py-1.5 rounded-full shadow-sm" style={{ background: info.color + '20', color: info.color, border: `1px solid ${info.color}40` }}>{info.label}</span>
+                            <span className="mx-2 text-sm font-extrabold text-slate-800 dark:text-slate-100 leading-tight">
+                              {t.split(/(\d+%?|\d+\s*[a-zA-Z]+|\(\d+%?\))/).map((part, idx) => {
+                                if (/\d/.test(part)) {
+                                  return <span key={idx} className="text-blue-600 dark:text-blue-400">{part}</span>;
+                                }
+                                return part;
+                              })}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">{info.explanation}</p>
                         </div>
-                        <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed pr-1">{info.explanation}</p>
                       </div>
                     </div>
                   );
@@ -689,18 +760,27 @@ const InsightCard = ({ profile }) => {
             </div>
           )}
           {keyFindings.length > 0 && (
-            <div className="space-y-4">
-              <h4 className="text-xs font-semibold tracking-wide text-slate-500 dark:text-slate-400">DATA INSIGHTS</h4>
-              <ul className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="h-px bg-gradient-to-r from-emerald-500 to-blue-600 flex-1"></div>
+                <h4 className="text-sm font-bold tracking-wider text-slate-700 dark:text-slate-300">DATA INSIGHTS</h4>
+                <div className="h-px bg-gradient-to-r from-blue-600 to-emerald-500 flex-1"></div>
+              </div>
+              <div className="grid gap-4">
                 {keyFindings.slice(0,5).map((f,i) => (
-                  <li key={i} className="flex items-start gap-3 text-small text-slate-600 dark:text-slate-300">
-                    <span className="w-5 h-5 rounded-lg flex items-center justify-center bg-slate-200/60 dark:bg-slate-700/50 text-[10px] text-slate-600 dark:text-slate-300 mt-0.5 shadow-sm">
-                      <FontAwesomeIcon icon={faChartLine} />
-                    </span>
-                    <span className="leading-relaxed pr-2">{f}</span>
-                  </li>
+                  <div key={i} className="group relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 rounded-xl opacity-60"></div>
+                    <div className="relative flex items-start gap-4 p-4 rounded-xl hover:shadow-md transition-all duration-200">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm shadow-lg flex-shrink-0 mt-0.5">
+                        <FontAwesomeIcon icon={faChartLine} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-medium">{f}</p>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
         </div>
