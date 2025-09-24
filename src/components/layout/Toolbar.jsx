@@ -100,7 +100,7 @@ export default function Toolbar({ difficulty, setDifficulty }) {
                   DIFFICULTY
                 </span>
               </div>
-              <div className="flex items-center gap-6">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-6">
                 {DIFFICULTY_OPTIONS.map((key) => {
                   const config = DIFFICULTY_CONFIG[key];
                   const isActive = difficulty === key;
@@ -108,7 +108,7 @@ export default function Toolbar({ difficulty, setDifficulty }) {
                     <button
                       key={key}
                       onClick={() => setDifficulty(key)}
-                      className={`btn px-4 py-2 transition-all duration-300 flex items-center gap-2 min-w-[120px] justify-center hover:-translate-y-0.5 ${
+                      className={`btn px-3 sm:px-4 py-2 transition-all duration-300 flex items-center gap-2 min-w-[100px] sm:min-w-[120px] justify-center hover:-translate-y-0.5 text-sm ${
                         isActive 
                           ? 'btn-primary glow-blue ring-2 ring-opacity-50' 
                           : 'btn-ghost hover:scale-105'
@@ -125,8 +125,8 @@ export default function Toolbar({ difficulty, setDifficulty }) {
                           : undefined
                       }}
                     >
-                      <FontAwesomeIcon icon={config.icon} className="text-base" />
-                      <span className="text-sm font-medium">{DIFFICULTY_LABELS[key]}</span>
+                      <FontAwesomeIcon icon={config.icon} className="text-sm sm:text-base" />
+                      <span className="text-xs sm:text-sm font-medium">{DIFFICULTY_LABELS[key]}</span>
                     </button>
                   );
                 })}

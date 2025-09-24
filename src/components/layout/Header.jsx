@@ -31,18 +31,18 @@ export default function Header() {
 
   return (
     <header className="w-full border-b glass" style={{ borderColor: 'rgb(var(--border))' }}>
-      <div className="content-wrapper" style={{ padding: '1.5rem 2rem' }}>
+      <div className="content-wrapper" style={{ padding: '1rem 1rem' }}>
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="heading-1 font-bold" style={{ color: 'rgb(var(--text))' }}>
+          <div className="min-w-0 flex-1">
+            <h1 className="heading-1 font-bold truncate" style={{ color: 'rgb(var(--text))' }}>
               TypingForce
             </h1>
-            <p className="font-medium" style={{ color: 'rgb(var(--muted))' }}>
+            <p className="font-medium text-sm sm:text-base truncate" style={{ color: 'rgb(var(--muted))' }}>
               Professional typing speed assessment platform
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <button onClick={toggleTheme} className="btn btn-soft" aria-label="Toggle theme">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <button onClick={toggleTheme} className="btn btn-soft text-sm" aria-label="Toggle theme">
               <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} />
               <span className="hidden sm:inline">{theme === 'dark' ? 'Light' : 'Dark'} mode</span>
             </button>

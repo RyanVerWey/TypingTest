@@ -243,10 +243,10 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
   return (
     <div className="space-y-16">
       {/* Session progress */}
-      <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'rgba(148,163,184,0.25)', border: '1px solid rgba(148,163,184,0.35)' }}>
+      <div className="w-full h-2 rounded-full overflow-hidden bg-slate-200/25 dark:bg-slate-400/25 border border-slate-200/35 dark:border-slate-400/35">
         <div
-          className="h-full transition-professional"
-          style={{ width: `${((TEST_SECONDS - timeLeft) / TEST_SECONDS) * 100}%`, background: 'linear-gradient(90deg, rgba(59,130,246,1), rgba(147,51,234,1))' }}
+          className="h-full transition-professional bg-gradient-to-r from-blue-500 to-purple-600"
+          style={{ width: `${((TEST_SECONDS - timeLeft) / TEST_SECONDS) * 100}%` }}
         />
       </div>
 
@@ -255,7 +255,7 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
         {/* Centered analytics display */}
         <div className="flex items-center justify-center mb-8">
           <div className="text-center">
-            <h3 className="text-sm font-medium tracking-wide mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            <h3 className="text-sm font-medium tracking-wide mb-2 text-slate-700/70 dark:text-white/70">
               LIVE ANALYTICS
             </h3>
             <div className="w-16 h-0.5 mx-auto" style={{ background: 'linear-gradient(90deg, rgba(59,130,246,0.8), rgba(147,51,234,0.8))' }}></div>
@@ -273,7 +273,7 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
               subtext={started && !finished ? "Running" : finished ? "Complete" : "Ready"}
               status={started && !finished ? "active" : finished ? "success" : "idle"}
             />
-            <div className="h-20 w-px" style={{ background: 'rgba(255,255,255,0.1)' }}></div>
+            <div className="h-20 w-px bg-white/10 dark:bg-white/10"></div>
             <StatItem
               icon={faGauge}
               label="WPM"
@@ -281,7 +281,7 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
               subtext="Speed"
               status={wpm > 60 ? "success" : wpm > 30 ? "warning" : "idle"}
             />
-            <div className="h-20 w-px" style={{ background: 'rgba(255,255,255,0.1)' }}></div>
+            <div className="h-20 w-px bg-white/10 dark:bg-white/10"></div>
             <StatItem
               icon={faKeyboard}
               label="Keys"
@@ -295,11 +295,11 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
           {timeline.length > 0 && (
             <div className="flex-1 max-w-xs mx-8">
               <div className="text-center mb-2">
-                <span className="text-xs font-medium tracking-wider" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                <span className="text-xs font-medium tracking-wider text-white/70 dark:text-white/70">
                   WPM PROGRESSION
                 </span>
               </div>
-              <div className="h-12 w-full rounded-lg px-3 py-2 flex items-center" style={{ background: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <div className="h-12 w-full rounded-lg px-3 py-2 flex items-center bg-slate-100/80 dark:bg-black/80 border border-slate-300/20 dark:border-white/10">
                 {timeline.length > 1 ? (
                   <svg viewBox="0 0 100 18" preserveAspectRatio="none" className="w-full h-full">
                     {
@@ -333,7 +333,7 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
                     }
                   </svg>
                 ) : (
-                  <div className="w-full text-center text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                  <div className="w-full text-center text-xs text-slate-700/50 dark:text-white/50">
                     Start typing...
                   </div>
                 )}
@@ -355,7 +355,7 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
               }
               status={accuracy >= 95 ? "success" : accuracy >= 85 ? "warning" : "error"}
             />
-            <div className="h-20 w-px" style={{ background: 'rgba(255,255,255,0.1)' }}></div>
+            <div className="h-20 w-px bg-slate-300/20 dark:bg-white/10"></div>
             <StatItem
               icon={faExclamationTriangle}
               label="Errors"
@@ -368,7 +368,7 @@ export default function EnhancedTypingTest({ difficulty, _setDifficulty }) {
               }
               status={enhancedAccuracy.errorsCommitted === 0 ? "success" : enhancedAccuracy.errorsCommitted < 5 ? "warning" : "error"}
             />
-            <div className="h-20 w-px" style={{ background: 'rgba(255,255,255,0.1)' }}></div>
+            <div className="h-20 w-px bg-slate-300/20 dark:bg-white/10"></div>
             <StatItem
               icon={faChartLine}
               label="Flow"
@@ -479,11 +479,7 @@ function BlockTypingPassage({ target, typed }) {
 
   return (
     <div className="w-full max-w-none">
-      <div className="rounded-lg p-8 glass" style={{ 
-        borderColor: 'rgb(var(--border))',
-        borderWidth: '1px',
-        background: 'rgba(255,255,255,0.02)',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+      <div className="rounded-lg p-8 glass border border-slate-200/20 dark:border-white/10 bg-slate-50/10 dark:bg-white/2 shadow-lg" style={{ 
         minHeight: '14rem'
       }}>
         <div className="relative">
@@ -663,14 +659,40 @@ function BlockTypingPassage({ target, typed }) {
 
 // Professional stat item component
 function StatItem({ icon, label, value, subtext, status = "idle" }) {
+  const [isDark, setIsDark] = useState(() => {
+    return document.documentElement.hasAttribute('data-theme') && 
+           document.documentElement.getAttribute('data-theme') === 'dark';
+  });
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const newIsDark = document.documentElement.hasAttribute('data-theme') && 
+                        document.documentElement.getAttribute('data-theme') === 'dark';
+      setIsDark(newIsDark);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme', 'class']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+  
   const colors = {
-    idle: { fg: 'rgba(255,255,255,0.85)', accent: 'rgba(148,163,184,0.6)' },
+    idle: { 
+      fg: isDark ? 'rgba(255,255,255,0.85)' : 'rgba(30,35,42,0.85)', 
+      accent: isDark ? 'rgba(148,163,184,0.6)' : 'rgba(102,115,132,0.6)' 
+    },
     active: { fg: 'rgb(59,130,246)', accent: 'rgba(59,130,246,0.8)' },
     success: { fg: 'rgb(34,197,94)', accent: 'rgba(34,197,94,0.85)' },
     warning: { fg: 'rgb(234,179,8)', accent: 'rgba(234,179,8,0.9)' },
     error: { fg: 'rgb(239,68,68)', accent: 'rgba(239,68,68,0.9)' },
     info: { fg: 'rgb(168,85,247)', accent: 'rgba(168,85,247,0.9)' },
-  }[status] || { fg: 'rgba(255,255,255,0.85)', accent: 'rgba(148,163,184,0.6)' };
+  }[status] || { 
+    fg: isDark ? 'rgba(255,255,255,0.85)' : 'rgba(30,35,42,0.85)', 
+    accent: isDark ? 'rgba(148,163,184,0.6)' : 'rgba(102,115,132,0.6)' 
+  };
 
   return (
     <div className="text-center min-w-[120px]">
@@ -694,12 +716,12 @@ function StatItem({ icon, label, value, subtext, status = "idle" }) {
       </div>
       
       {/* Label */}
-      <div className="text-xs font-medium tracking-wider mb-1" style={{ color: 'rgba(255,255,255,0.9)' }}>
+      <div className={`text-xs font-medium tracking-wider mb-1 ${isDark ? 'text-white/90' : 'text-slate-800/90'}`}>
         {label.toUpperCase()}
       </div>
       
       {/* Subtext */}
-      <div className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)' }}>
+      <div className={`text-[10px] ${isDark ? 'text-white/60' : 'text-slate-700/60'}`}>
         {subtext}
       </div>
     </div>
