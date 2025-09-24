@@ -14,7 +14,7 @@ export default function App() {
   });
 
   return (
-    <div className="app-container" style={{ color: 'rgb(var(--text))', background: 'rgb(var(--bg))' }}>
+    <div className="app-container" style={{ color: 'rgb(var(--text))' }}>
       {/* Hero gradient field */}
       <div className="hero-bg"></div>
       {/* Subtle dot pattern overlay */}

@@ -117,10 +117,10 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
   ];
 
   return (
-    <div className="max-w-7xl mx-auto p-8 space-y-12" ref={resultsRef} data-export-root>
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8 lg:space-y-12" ref={resultsRef} data-export-root>
       {/* Header */}
       <div className="panel panel-roomy">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-8">
           <div className="space-y-3">
             <h1 className="text-4xl font-semibold tracking-tight text-slate-800 dark:text-slate-100">Results Overview</h1>
             <div className="flex flex-wrap items-center gap-4 text-base text-slate-600 dark:text-slate-400">
@@ -137,7 +137,7 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
             <button onClick={() => exportPNG(resultsRef.current)} className="btn btn-soft h-12 px-6 text-base font-medium">
               <FontAwesomeIcon icon={faDownload} className="mr-3" />Export PNG
             </button>
-              <button onClick={() => nav('/')} className="btn btn-primary h-12 px-8 text-base font-medium">
+            <button onClick={() => nav('/')} className="btn btn-primary h-12 px-8 text-base font-medium">
               <FontAwesomeIcon icon={faPlay} className="mr-3" />New Test
             </button>
           </div>
@@ -145,7 +145,7 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
       </div>
 
       {/* KPI Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
         <MetricRowChart icon={faBolt} title="Speed" value={(wpm / 80) * 100} displayValue={`${wpm} WPM`} color="#3B82F6" target={80} />
         <MetricRowChart icon={faCheckCircle} title="Accuracy" value={enhancedAccuracy?.adjusted || accuracy} displayValue={`${enhancedAccuracy?.adjusted || accuracy}%`} color="#22C55E" target={95} />
         <MetricRowChart icon={faKeyboard} title="Keystrokes" value={(keystrokes / 1000) * 100} displayValue={`${keystrokes} (${errors} errors)`} color="#8B5CF6" />
@@ -153,7 +153,7 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
       </div>
 
       {/* Analytics Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         
         {/* Main Performance Chart - Spans 2 columns */}
         <div className="lg:col-span-2">
@@ -162,8 +162,8 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
             icon={faChartLine}
             description="Track your typing speed (WPM) and accuracy percentage throughout the entire test session. The blue area shows speed trends while the green line indicates accuracy consistency."
           >
-            <div className="w-full h-full overflow-hidden">
-              <ResponsiveContainer width="100%" height={320}>
+            <div className="w-full h-full overflow-hidden chart-container">
+              <ResponsiveContainer width="100%" height={320} className="sm:!h-80">
                 <ComposedChart data={timelineData} margin={{ top: 10, right: 20, left: 10, bottom: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                   <XAxis 
@@ -219,8 +219,8 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
           icon={faChartPie}
           description="Breakdown of all keystrokes during your session. Green represents correctly typed keys while red shows errors that required correction."
         >
-          <div className="w-full h-full overflow-hidden">
-            <ResponsiveContainer width="100%" height={320}>
+          <div className="w-full h-full overflow-hidden chart-container">
+            <ResponsiveContainer width="100%" height={320} className="sm:!h-80">
               <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                 <Pie
                   data={keystrokeData}
@@ -244,7 +244,7 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
       </div>
 
   {/* Secondary Charts */}
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         
         {/* Character Type Performance */}
         <ChartCard 
@@ -252,8 +252,8 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
           icon={faChartBar}
           description="Accuracy breakdown by character type. Shows how well you handle letters (blue), numbers (green), and symbols (orange) separately."
         >
-          <div className="w-full h-full overflow-hidden">
-            <ResponsiveContainer width="100%" height={280}>
+          <div className="w-full h-full overflow-hidden chart-container">
+            <ResponsiveContainer width="100%" height={280} className="sm:!h-72">
               <BarChart data={characterData} margin={{ top: 10, right: 15, left: 10, bottom: 10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis dataKey="type" fontSize={12} stroke="#64748b" />
@@ -280,8 +280,8 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
           icon={faBullseye}
           description="Overall typing performance across four key areas. The solid blue area shows your current scores while the dotted line indicates target benchmarks."
         >
-          <div className="w-full h-full overflow-hidden">
-            <ResponsiveContainer width="100%" height={280}>
+          <div className="w-full h-full overflow-hidden chart-container">
+            <ResponsiveContainer width="100%" height={280} className="sm:!h-72">
               <RadarChart data={performanceData} margin={{ top: 10, right: 15, bottom: 10, left: 15 }}>
                 <PolarGrid stroke="#e2e8f0" />
                 <PolarAngleAxis dataKey="skill" fontSize={11} />
@@ -317,7 +317,7 @@ function MetricRowChart({ icon, title, value, displayValue, color = '#3B82F6', t
 
       {/* Insight & Improvement Plan */}
       {analytics && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           <InsightCard profile={analytics.personality} />
           <TipsCard tips={analytics.tips} />
         </div>
@@ -723,7 +723,7 @@ const InsightCard = ({ profile }) => {
           })}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           {traits.length > 0 && (
             <div className="space-y-6">
               <div className="flex items-center gap-3">
