@@ -1,33 +1,46 @@
 :root {
   font-family: "DM Sans", system-ui, sans-serif;
-  color: oklch(26% 0.018 165);
-  background: oklch(98% 0.006 160);
+  color: var(--text);
+  background: var(--bg);
   font-synthesis: none;
   font-weight: 400;
-  --bg: oklch(98% 0.006 160);
-  --surface: oklch(99.3% 0.003 160);
-  --soft: oklch(95% 0.009 160);
-  --text: oklch(26% 0.018 165);
-  --muted: oklch(47% 0.018 165);
-  --line: oklch(87% 0.014 165);
-  --accent: oklch(41% 0.085 165);
-  --accent-soft: oklch(92% 0.035 165);
+  --bg: oklch(96% 0.018 83);
+  --surface: oklch(99% 0.006 83);
+  --soft: oklch(92% 0.02 83);
+  --text: oklch(25% 0.023 258);
+  --muted: oklch(46% 0.022 258);
+  --line: oklch(81% 0.022 83);
+  --accent: oklch(39% 0.09 161);
+  --accent-soft: oklch(92% 0.04 161);
+  --action: oklch(45% 0.2 264);
+  --action-soft: oklch(93% 0.03 264);
+  --amber: oklch(42% 0.095 72);
+  --amber-soft: oklch(94% 0.065 86);
   --error: oklch(46% 0.17 28);
   --error-bg: oklch(94% 0.04 28);
+  --console: oklch(26% 0.025 258);
+  --console-text: oklch(97% 0.008 83);
+  --lime: oklch(88% 0.17 111);
+  --key-shadow: oklch(73% 0.025 83);
   --mono: "IBM Plex Mono", Consolas, monospace;
   color-scheme: light;
 }
 :root[data-theme="dark"] {
-  --bg: oklch(19% 0.012 165);
-  --surface: oklch(22% 0.012 165);
-  --soft: oklch(26% 0.014 165);
-  --text: oklch(93% 0.008 165);
-  --muted: oklch(72% 0.015 165);
-  --line: oklch(36% 0.018 165);
+  --bg: oklch(19% 0.016 258);
+  --surface: oklch(23% 0.018 258);
+  --soft: oklch(28% 0.022 258);
+  --text: oklch(95% 0.01 83);
+  --muted: oklch(75% 0.018 258);
+  --line: oklch(40% 0.025 258);
   --accent: oklch(79% 0.1 165);
   --accent-soft: oklch(31% 0.04 165);
   --error: oklch(80% 0.13 28);
   --error-bg: oklch(31% 0.06 28);
+  --action: oklch(79% 0.11 264);
+  --action-soft: oklch(29% 0.07 264);
+  --amber: oklch(84% 0.12 86);
+  --amber-soft: oklch(30% 0.045 72);
+  --key-shadow: oklch(12% 0.012 258);
   color-scheme: dark;
   color: var(--text);
   background: var(--bg);
@@ -85,8 +98,9 @@ button:focus-visible,
 a:focus-visible,
 summary:focus-visible,
 input:focus-visible,
-textarea:focus-visible {
-  outline: 3px solid var(--accent);
+textarea:focus-visible,
+.table-wrap:focus-visible {
+  outline: 3px solid var(--action);
   outline-offset: 4px;
 }
 h1,
@@ -125,7 +139,7 @@ small {
   padding: 0 52px;
 }
 header {
-  height: 112px;
+  height: 88px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -162,7 +176,7 @@ header {
   font-size: 0.85rem;
 }
 .brand-light {
-  font-weight: 400;
+  font-weight: 800;
 }
 .brand small {
   font-size: 0.51rem;
@@ -399,7 +413,7 @@ textarea::placeholder {
   display: block;
   width: 100%;
   height: 100%;
-  background: var(--accent);
+  background: var(--amber);
   transform-origin: left;
   transition: transform 100ms linear;
 }
@@ -463,9 +477,9 @@ footer {
   color: var(--muted);
 }
 .primary {
-  background: var(--accent);
+  background: var(--action);
   color: var(--bg);
-  border-color: var(--accent);
+  border-color: var(--action);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -551,10 +565,10 @@ footer {
   stroke-dasharray: 3 5;
 }
 .speed-line {
-  stroke: var(--accent);
+  stroke: var(--action);
 }
 .practice-plan {
-  background: var(--soft);
+  background: var(--amber-soft);
   padding: 25px;
   border-radius: 9px;
 }

@@ -113,7 +113,7 @@ function Results({ result, onRepeat, onDrill, history }) {
                 : LEVELS.find((l) => l.id === result.level)?.name.toUpperCase()}
           </p>
           <h1 id="result-heading" tabIndex="-1">
-            A little clearer. A little better.
+            Your session, unpacked.
           </h1>
           <p>
             {Math.round(result.seconds)} seconds of practice. Here’s what to
@@ -498,8 +498,8 @@ export default function App() {
             <img src="/brand/mark.svg" alt="" width="43" height="43" />
           </span>
           <span>
-            typing<span className="brand-light">force</span>
-            <small>MAKE EVERY KEY COUNT</small>
+            TYPING<span className="brand-light">FORCE</span>
+            <small>TYPE. LEARN. REPEAT.</small>
           </span>
         </a>
         <nav aria-label="Main navigation">
@@ -535,7 +535,12 @@ export default function App() {
             </div>
             {history.length ? (
               <>
-                <div className="table-wrap">
+                <div
+                  className="table-wrap"
+                  tabIndex="0"
+                  role="region"
+                  aria-label="Saved practice sessions"
+                >
                   <table>
                     <thead>
                       <tr>
@@ -612,24 +617,35 @@ export default function App() {
           <>
             <section className="intro">
               <div className="intro-copy">
-                <p className="eyebrow">
-                  <span className="status-dot" /> A SMALL PRACTICE. A LASTING
-                  SKILL.
-                </p>
-                <h1>Find your flow.</h1>
+                <p className="eyebrow intro-label">YOUR KEYBOARD. YOUR PACE.</p>
+                <h1>
+                  Make every
+                  <br />
+                  <span>key count.</span>
+                </h1>
                 <p>
-                  A clearer picture of how you type.
-                  <br className="mobile-break" /> A focused way to get better.
+                  Find your rhythm. Fix the keys that trip you up. A few focused
+                  minutes is a good place to start.
                 </p>
               </div>
-              <img
-                className="brand-art"
-                src="/brand/typing-force-keyboard.webp"
-                width="1000"
-                height="523"
-                alt="Typing Force: Make every key count. A green and ivory mechanical keyboard."
-                fetchPriority="high"
-              />
+              <div className="brand-poster">
+                <img
+                  className="brand-art"
+                  src="/brand/typing-force-keyboard.webp"
+                  width="1000"
+                  height="523"
+                  alt="Typing Force: Make every key count. A green and ivory mechanical keyboard."
+                  fetchPriority="high"
+                />
+                <span className="practice-stamp" aria-hidden="true">
+                  FIND YOUR
+                  <strong>
+                    OWN
+                    <br />
+                    RHYTHM.
+                  </strong>
+                </span>
+              </div>
             </section>
             <section className="practice" aria-label="Typing practice">
               <div className="mode-controls">
@@ -668,6 +684,7 @@ export default function App() {
                         aria-pressed={level === l.id}
                         title={l.detail}
                         onClick={() => reset(l.id, duration)}
+                        data-level={l.id}
                       >
                         <span className="level-number">0{i + 1}</span>
                         {l.name}
@@ -711,7 +728,11 @@ export default function App() {
                   </label>
                 )}
               </div>
-              <div className="live-metrics" aria-label="Live measurements">
+              <div
+                className="live-metrics"
+                aria-label="Live measurements"
+                data-time-low={running && duration - m.seconds <= 10}
+              >
                 <Metric
                   value={m.seconds < 1 ? "—" : number(m.wpm)}
                   label="WPM"
@@ -726,7 +747,9 @@ export default function App() {
                 />
                 <div className="session-state">
                   <span className="status-dot" />
-                  {running ? "In the flow" : "Ready when you are"}
+                  {running
+                    ? "You’re on the clock"
+                    : "Your first key starts the clock"}
                 </div>
               </div>
               {adaptive && (
@@ -819,31 +842,22 @@ export default function App() {
                 </button>
               </div>
             </section>
-            <section className="below-test">
-              <div>
-                <span className="section-index">01 / MEASURE</span>
-                <h2>More than a speed score.</h2>
-                <p>
-                  See your pace, accuracy, and the keys that slow you down.
-                  Every result comes with a clear explanation.
-                </p>
+            <section className="practice-notes" aria-label="Practice tips">
+              <div className="home-keys" aria-hidden="true">
+                <kbd>F</kbd>
+                <kbd>J</kbd>
               </div>
               <div>
-                <span className="section-index">02 / UNDERSTAND</span>
-                <h2>Notice your habits.</h2>
+                <h2>Small sessions. Useful habits.</h2>
                 <p>
-                  Explore your rhythm, pauses, and corrections. Useful
-                  observations about this session, without personality labels.
+                  Relax your hands and read a word ahead. When you finish, your
+                  missed keys become your next drill.
                 </p>
               </div>
-              <div>
-                <span className="section-index">03 / IMPROVE</span>
-                <h2>Give practice a purpose.</h2>
-                <p>
-                  Turn problem keys into a focused drill, follow a five-minute
-                  plan, and watch your progress over time.
-                </p>
-              </div>
+              <p className="privacy-note">
+                <strong>Just you and the keys.</strong>No login. No leaderboard.
+                Your practice stays on this device.
+              </p>
             </section>
           </>
         )}
