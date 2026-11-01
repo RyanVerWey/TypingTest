@@ -1,6 +1,10 @@
 # Typing Force visual system
 
-An everyday typist practicing at a desk in daylight needs a quiet, bright surface; an explicit dark toggle supports evening use. Use restrained green-tinted neutrals and a forest-green accent for actions, selection, and correct input.
+An everyday typist practicing at a desk in daylight needs a quiet, bright reading surface; an explicit dark toggle supports evening use. The surrounding interface borrows the character of a mechanical keyboard: warm ivory, tactile keys, a dark control rail, and a clear four-color vocabulary.
+
+- Cobalt identifies actions and speed, forest green marks correct input and accuracy, amber carries timing and rhythm, and coral marks errors. Dark mode uses the same roles at readable lightness values.
+- The campaign artwork remains a normal mechanical keyboard. A simple practice stamp and stronger wordmark give it character without moving the passage.
+- The results include a QWERTY map with explicit miss counts, plus the detailed character table for case-sensitive evidence. Decorative key shapes never impersonate interactive buttons.
 
 - Self-hosted DM Sans for interface copy, IBM Plex Mono for passage text and measurements. No external font requests.
 - One main practice surface, thin dividers, small corner radii, and generous space around the passage. Campaign branding uses a normal mechanical keyboard, forest/ivory materials, and chartreuse speed-rail details; no surreal hardware.

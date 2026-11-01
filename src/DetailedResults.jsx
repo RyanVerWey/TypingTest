@@ -1,5 +1,6 @@
 import { LEVELS, keyName } from "./lib/engine";
 import { insights } from "./lib/insights";
+import KeyboardMap from "./KeyboardMap";
 const fmt = (n, suffix = "") =>
   n === null ? "Not enough data" : `${Math.round(n)}${suffix}`;
 function Facts({ rows }) {
@@ -223,7 +224,12 @@ export default function DetailedResults({ result: r }) {
           excluded from peak pace. Unlike cumulative WPM, these show where you
           accelerated, slowed down, or stopped.
         </p>
-        <div className="table-wrap">
+        <div
+          className="table-wrap"
+          tabIndex="0"
+          role="region"
+          aria-label="Five-second typing intervals"
+        >
           <table>
             <thead>
               <tr>
@@ -274,6 +280,7 @@ export default function DetailedResults({ result: r }) {
           transitions, with at least three samples per key. A slow key can also
           reflect the letter before it.
         </p>
+        <KeyboardMap keys={d.keyDetails} />
         <div className="key-map">
           {d.keyDetails.map((k) => (
             <div
@@ -301,7 +308,8 @@ export default function DetailedResults({ result: r }) {
           <p className="muted">
             Ended on {LEVELS[d.adaptive.stage].name}, round {d.adaptive.round}.
             The final in-progress round is included in overall metrics.
-            Difficulty changes are queued one passage ahead so visible text never changes.
+            Difficulty changes are queued one passage ahead so visible text
+            never changes.
           </p>
           {d.adaptive.steps.length ? (
             <ol className="journey">

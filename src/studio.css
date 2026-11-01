@@ -1,0 +1,542 @@
+/* Keyboard studio: consistent color roles and tactile controls. */
+.brand {
+  font-weight: 850;
+  letter-spacing: -0.055em;
+  gap: 10px;
+}
+.brand-light {
+  margin-left: 3px;
+  color: var(--action);
+}
+.brand small {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.brand-mark {
+  transform: rotate(-5deg);
+}
+.intro {
+  grid-template-columns: 1fr 370px;
+  gap: 64px;
+  padding: 38px 0 46px;
+}
+.intro-copy h1 {
+  font-size: 3.7rem;
+  font-weight: 850;
+  line-height: 0.99;
+  letter-spacing: -0.055em;
+}
+.intro-copy h1 span {
+  color: var(--action);
+}
+.intro-label {
+  color: var(--text);
+  font: 500 0.66rem var(--mono);
+  letter-spacing: 0.1em;
+}
+.intro-copy > p:last-child {
+  max-width: 40ch;
+  font-size: 0.92rem;
+  margin-top: 20px;
+}
+.brand-poster {
+  position: relative;
+  margin-right: 12px;
+  transform: rotate(2deg);
+}
+.brand-art {
+  border: 7px solid var(--surface);
+  border-radius: 3px;
+  box-shadow:
+    0 2px 0 var(--line),
+    0 10px 22px oklch(25% 0.02 83 / 0.1);
+}
+.practice-stamp {
+  position: absolute;
+  right: -25px;
+  bottom: -23px;
+  width: 102px;
+  height: 102px;
+  border-radius: 50%;
+  background: var(--lime);
+  color: var(--console);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font: 500 0.49rem var(--mono);
+  transform: rotate(-12deg);
+  border: 1px solid var(--console);
+  box-shadow:
+    inset 0 0 0 5px var(--lime),
+    inset 0 0 0 6px var(--console);
+}
+.practice-stamp strong {
+  font:
+    850 1rem/0.98 "DM Sans",
+    sans-serif;
+  margin-top: 5px;
+}
+.practice {
+  border-color: var(--line);
+  border-radius: 13px;
+  box-shadow:
+    0 7px 0 var(--soft),
+    0 8px 0 var(--line);
+}
+.mode-controls {
+  background: var(--console);
+  color: var(--console-text);
+  padding: 18px 28px;
+}
+.mode-controls legend,
+.mode-controls button {
+  color: var(--console-text);
+}
+.mode-controls p {
+  color: var(--console-text);
+  font-size: 0.75rem;
+  max-width: 37ch;
+}
+.mode-controls .segments button[aria-pressed="true"] {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: var(--console);
+}
+.mode-controls button:hover {
+  background: oklch(36% 0.025 258);
+}
+.controls {
+  background: var(--bg);
+  padding-top: 22px;
+}
+.controls .segments {
+  gap: 7px;
+}
+.controls .segments button {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 3px 0 var(--key-shadow);
+  min-height: 42px;
+  border-radius: 6px;
+  transition:
+    transform 120ms ease-out,
+    box-shadow 120ms ease-out;
+}
+.controls .segments button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 var(--key-shadow);
+}
+.controls .segments button:active:not(:disabled),
+.controls .segments button[aria-pressed="true"] {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--key-shadow);
+}
+.controls .segments button[aria-pressed="true"] {
+  background: var(--action-soft);
+  color: var(--action);
+  border-color: var(--action);
+}
+.levels button {
+  --level-color: var(--accent);
+  --level-soft: var(--accent-soft);
+}
+.levels button[data-level="flow"] {
+  --level-color: var(--action);
+  --level-soft: var(--action-soft);
+}
+.levels button[data-level="precision"] {
+  --level-color: var(--error);
+  --level-soft: var(--error-bg);
+}
+.levels button[data-level="code"] {
+  --level-color: var(--amber);
+  --level-soft: var(--amber-soft);
+}
+.level-number {
+  color: var(--level-color);
+  font-weight: 600;
+}
+.controls .levels button[aria-pressed="true"] {
+  color: var(--level-color);
+  background: var(--level-soft);
+  border-color: var(--level-color);
+}
+.session-meta {
+  background: var(--bg);
+  padding-top: 6px;
+}
+.live-metrics .metric:nth-child(1) strong,
+.result-metrics .metric:nth-child(1) strong {
+  color: var(--action);
+}
+.live-metrics .metric:nth-child(2) strong,
+.result-metrics .metric:nth-child(2) strong {
+  color: var(--accent);
+}
+.live-metrics .metric:nth-child(3) strong,
+.result-metrics .metric:nth-child(3) strong {
+  color: var(--amber);
+}
+.result-metrics .metric:nth-child(4) strong,
+.live-metrics[data-time-low="true"] .metric:nth-child(3) strong {
+  color: var(--error);
+}
+.live-metrics .metric strong {
+  font-size: 2rem;
+}
+.session-state {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+}
+.adaptive-status {
+  background: var(--action-soft);
+  border-color: color-mix(in oklab, var(--action) 25%, var(--surface));
+  color: var(--action);
+  height: 80px;
+  min-height: 80px;
+}
+.adaptive-status span {
+  color: var(--action);
+}
+.passage {
+  color: var(--muted);
+}
+.passage .correct {
+  color: var(--accent);
+}
+.passage .incorrect {
+  color: var(--error);
+}
+textarea {
+  background: var(--bg);
+  border-radius: 5px;
+  box-shadow: inset 0 2px 0 var(--soft);
+}
+.primary {
+  box-shadow: 0 3px 0 var(--key-shadow);
+}
+.primary:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--key-shadow);
+}
+.report-navigation a {
+  color: var(--action);
+}
+.section-heading h1 {
+  font-weight: 750;
+}
+.practice-notes {
+  display: grid;
+  grid-template-columns: auto 1fr 250px;
+  align-items: center;
+  gap: 24px;
+  padding: 45px 0;
+}
+.practice-notes h2 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+.practice-notes p {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 7px;
+  max-width: 48ch;
+}
+.home-keys {
+  display: flex;
+  gap: 5px;
+  padding-right: 4px;
+}
+.home-keys kbd {
+  display: grid;
+  place-items: center;
+  position: relative;
+  width: 45px;
+  height: 48px;
+  font-size: 1.25rem;
+  background: var(--amber-soft);
+  border-color: var(--amber);
+  box-shadow: 0 4px 0 var(--key-shadow);
+  transform: rotate(-7deg);
+}
+.home-keys kbd:last-child {
+  transform: rotate(8deg) translateY(5px);
+  background: var(--action-soft);
+  border-color: var(--action);
+}
+.home-keys kbd::after {
+  content: "";
+  position: absolute;
+  bottom: 6px;
+  width: 10px;
+  height: 2px;
+  background: currentColor;
+}
+.practice-notes .privacy-note {
+  max-width: 29ch;
+  font-size: 0.73rem;
+  margin: 0;
+}
+.privacy-note strong {
+  display: block;
+  color: var(--text);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.keyboard-map {
+  margin: 24px 0 30px;
+}
+.keyboard-map figcaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+.keyboard-map figcaption strong {
+  font-size: 0.9rem;
+}
+.keyboard-map figcaption span {
+  font-size: 0.73rem;
+  color: var(--muted);
+  max-width: 52ch;
+}
+.keyboard-deck {
+  max-width: 760px;
+  padding: 18px 20px 22px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 5px 0 var(--line);
+}
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.keyboard-row:last-child {
+  margin: 0;
+}
+.keyboard-key {
+  flex: 0 1 64px;
+  min-width: 0;
+  padding: 7px 1px 9px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  box-shadow: 0 3px 0 var(--key-shadow);
+}
+.keyboard-key > span {
+  display: block;
+  font: 500 0.95rem var(--mono);
+}
+.keyboard-key small {
+  margin-top: 4px;
+  font-size: 0.6rem;
+}
+.keyboard-key.clean {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.keyboard-key.missed {
+  background: var(--error-bg);
+  border-color: var(--error);
+  color: var(--error);
+}
+.keyboard-key.untried {
+  color: var(--muted);
+}
+.keyboard-key.space-key {
+  flex-basis: 360px;
+}
+.keyboard-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 15px;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.keyboard-legend .clean {
+  color: var(--accent);
+}
+.keyboard-legend .missed {
+  color: var(--error);
+}
+@media (max-width: 1000px) {
+  .intro {
+    grid-template-columns: 1fr 300px;
+    gap: 30px;
+  }
+  .intro-copy h1 {
+    font-size: 3.1rem;
+  }
+  .practice-notes {
+    grid-template-columns: auto 1fr;
+  }
+  .practice-notes .privacy-note {
+    grid-column: 2;
+    max-width: none;
+  }
+  .keyboard-map figcaption {
+    display: block;
+  }
+  .keyboard-map figcaption span {
+    display: block;
+    margin-top: 6px;
+  }
+}
+@media (max-width: 680px) {
+  header {
+    height: 80px;
+  }
+  .brand {
+    font-size: 1.05rem;
+    gap: 8px;
+  }
+  .brand small {
+    display: none;
+  }
+  .intro {
+    grid-template-columns: 1fr 130px;
+    gap: 16px;
+    padding: 30px 0;
+  }
+  .intro-copy h1 {
+    font-size: 2.25rem;
+    line-height: 1.03;
+  }
+  .intro-label {
+    font-size: 0.52rem;
+    letter-spacing: 0.04em;
+  }
+  .intro-copy > p:last-child {
+    font-size: 0.78rem;
+    margin-top: 12px;
+  }
+  .brand-poster {
+    margin: 0;
+    transform: rotate(3deg);
+    align-self: center;
+  }
+  .brand-art {
+    border-width: 3px;
+    border-radius: 3px;
+    max-height: none;
+  }
+  .practice-stamp {
+    width: 67px;
+    height: 67px;
+    right: -3px;
+    bottom: -39px;
+    font-size: 0.34rem;
+    box-shadow:
+      inset 0 0 0 3px var(--lime),
+      inset 0 0 0 4px var(--console);
+  }
+  .practice-stamp strong {
+    font-size: 0.67rem;
+    margin-top: 3px;
+  }
+  .mode-controls {
+    padding: 16px 18px;
+    gap: 10px;
+  }
+  .controls .segments {
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .controls .levels {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .controls .levels button {
+    padding: 8px 9px;
+    font-size: 0.73rem;
+  }
+  .level-number {
+    margin-right: 4px;
+    font-size: 0.6rem;
+  }
+  .adaptive-status {
+    height: 115px;
+    min-height: 115px;
+  }
+  .live-metrics {
+    gap: 30px;
+  }
+  .live-metrics .metric strong {
+    font-size: 1.75rem;
+  }
+  .practice-notes {
+    gap: 16px;
+    padding: 35px 0;
+  }
+  .home-keys {
+    gap: 3px;
+  }
+  .home-keys kbd {
+    width: 32px;
+    height: 38px;
+    font-size: 1rem;
+  }
+  .practice-notes h2 {
+    font-size: 0.9rem;
+  }
+  .practice-notes p {
+    font-size: 0.76rem;
+  }
+  .keyboard-deck {
+    padding: 10px 7px 14px;
+  }
+  .keyboard-row {
+    gap: 3px;
+    margin-bottom: 5px;
+  }
+  .keyboard-key {
+    padding: 6px 0;
+  }
+  .keyboard-key > span {
+    font-size: 0.72rem;
+  }
+  .keyboard-key small {
+    font-size: 0.6rem;
+  }
+  .keyboard-unit {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .keyboard-key.space-key {
+    flex-basis: 65%;
+  }
+  .keyboard-legend {
+    font-size: 0.64rem;
+    gap: 10px;
+  }
+}
+@media (max-width: 359px) {
+  .intro {
+    grid-template-columns: 1fr 100px;
+    gap: 10px;
+  }
+  .intro-copy h1 {
+    font-size: 2rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .controls .segments button {
+    transition: none;
+  }
+}

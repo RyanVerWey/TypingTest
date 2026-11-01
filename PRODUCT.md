@@ -14,7 +14,7 @@ A focused typing practice tool with optional challenges, confirmed by Ryan on No
 
 ## Brand Personality
 
-Calm, precise, professional, confirmed by Ryan. Preserve the portfolio's direct, evidence-backed voice.
+Calm and precise during practice, with more playful character around it. Ryan's latest direction (November 1, 2026) asks for a less monochromatic, less generic UI: warmer surfaces, purposeful color, tactile keyboard details, and straightforward copy. Preserve the portfolio's direct, evidence-backed voice.
 
 ## Anti-references
 
