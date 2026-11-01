@@ -36,7 +36,7 @@ const StablePassage = memo(function StablePassage({ target, typed }) {
       caret.className = "cursor";
       const lineHeight = parseFloat(getComputedStyle(box).lineHeight);
       const lineTop = Math.floor(caret.offsetTop / lineHeight) * lineHeight;
-      // Advance one full line only when the caret reaches the third visible line.
+      // Four visible lines leave two full lines ahead when the caret advances.
       // Never shift horizontally or rewrap already displayed words.
       if (lineTop >= box.scrollTop + lineHeight * 2)
         box.scrollTop = lineTop - lineHeight;

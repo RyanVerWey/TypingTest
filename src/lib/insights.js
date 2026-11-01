@@ -1,3 +1,5 @@
+import { LEVELS } from "./engine.js";
+
 export function insights(r) {
   if (r.attempts < 50 || r.seconds < 15)
     return [
@@ -93,7 +95,7 @@ export function insights(r) {
     });
   if (d.adaptive?.steps.length) {
     const rises = d.adaptive.steps.filter(
-      (s) => s.level !== s.nextLevel && s.accuracy >= 97,
+      (s) => LEVELS.findIndex((l) => l.id === s.nextLevel) > LEVELS.findIndex((l) => l.id === s.level),
     ).length;
     items.push({
       title: "You tested your current learning edge",

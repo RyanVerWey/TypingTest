@@ -301,6 +301,7 @@ export default function DetailedResults({ result: r }) {
           <p className="muted">
             Ended on {LEVELS[d.adaptive.stage].name}, round {d.adaptive.round}.
             The final in-progress round is included in overall metrics.
+            Difficulty changes are queued one passage ahead so visible text never changes.
           </p>
           {d.adaptive.steps.length ? (
             <ol className="journey">

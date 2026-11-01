@@ -960,6 +960,8 @@ th {
   border-radius: 6px;
   background: var(--soft);
   min-height: 73px;
+  height: 96px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -1126,7 +1128,7 @@ th {
   overflow-anchor: none;
   scroll-behavior: auto;
   line-height: 2;
-  height: 6em;
+  height: 8em;
 }
 .passage span {
   overflow-anchor: none;
@@ -1143,6 +1145,7 @@ th {
   .adaptive-status {
     margin: 0 18px 18px;
     min-height: 96px;
+    height: 120px;
   }
   .insight-list {
     grid-template-columns: 1fr;

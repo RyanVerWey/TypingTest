@@ -6,7 +6,7 @@ Production: https://typingspeed.ryanverwey.dev
 
 ## Practice
 
-- Adaptive journeys progress at completed-passage checkpoints, easing back when accuracy falls. Fixed benchmarks remain available for comparable scores.
+- Adaptive journeys progress at completed-passage checkpoints, easing back when accuracy falls. One upcoming passage stays queued and readable; difficulty decisions affect newly queued text, so visible words never change. Fixed benchmarks remain available for comparable scores.
 - Four open levels: Foundation, Flow, Precision, and Code.
 - 15, 30, 60, and 120 second sessions, starting on the first character.
 - Live correct WPM, attempt accuracy, countdown, and character feedback.
@@ -45,7 +45,7 @@ GoDaddy DNS: `typingspeed` CNAME points to `1b94439d0eb54012.vercel-dns-016.com`
 
 ## Verification notes
 
-The modernization was checked with 21 automated scoring/storage/adaptation/report tests, local production build and lint, real-browser correction/timer/drill/history flows, 300-character layout-stability verification, two adaptive transitions, and responsive light/dark checks. Production dependency audit: no known vulnerabilities at verification. Seven moderate audit findings remain in the development-only ESLint/minimatch dependency chain; npm reports no compatible fix. They are not shipped in the static browser bundle.
+The modernization was checked with 23 automated scoring/storage/adaptation/report tests, local production build and lint, real-browser correction/timer/drill/history flows, 300-character layout-stability verification, two adaptive transitions, and responsive light/dark checks. Production dependency audit: no known vulnerabilities at verification. Seven moderate audit findings remain in the development-only ESLint/minimatch dependency chain; npm reports no compatible fix. They are not shipped in the static browser bundle.
 
 ## Branding
 
