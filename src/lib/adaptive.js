@@ -1,10 +1,13 @@
 import { LEVELS, practiceChunk } from "./engine.js";
 
-export function roundPassage(level) {
-  return practiceChunk(level);
+export function roundPassage(level, opening = false) {
+  return practiceChunk(level, { opening });
 }
 export function enableAdaptive(session, level) {
-  const stage = Math.max(0, LEVELS.findIndex((l) => l.id === level));
+  const stage = Math.max(
+    0,
+    LEVELS.findIndex((l) => l.id === level),
+  );
   session.adaptive = {
     stage,
     queuedStage: stage,
@@ -26,7 +29,8 @@ export function advanceAdaptive(session, now) {
     !state ||
     session.text.length !== state.roundEnd ||
     session.endedAt !== null ||
-    (session.startedAt !== null && now - session.startedAt >= session.duration * 1000)
+    (session.startedAt !== null &&
+      now - session.startedAt >= session.duration * 1000)
   )
     return null;
   const attempts = session.attempts.slice(state.attemptStart);
