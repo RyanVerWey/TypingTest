@@ -485,10 +485,8 @@ export default function App() {
       setNotice("");
       sample(current, now);
       setTick(now);
-      if (current.text.length === current.target.length) {
-        if (current.adaptive) advanceAdaptive(current, now);
-        else complete(now);
-      }
+      if (current.adaptive) advanceAdaptive(current, now);
+      else if (current.text.length === current.target.length) complete(now);
     }
   }
   const activeLevel = LEVELS.find((l) => l.id === level);
@@ -739,7 +737,7 @@ export default function App() {
                   </strong>
                   <span>
                     {current.adaptive.stage < 3
-                      ? `Next: ${LEVELS[current.adaptive.stage + 1].name} · ${Math.round(LEVELS[current.adaptive.stage].goal * 0.7)}+ correct WPM`
+                      ? `Read ahead: ${LEVELS[current.adaptive.queuedStage].name} ready · Next goal: ${Math.round(LEVELS[current.adaptive.stage].goal * 0.7)}+ correct WPM`
                       : "Top level · reinforce precise, steady typing"}
                   </span>
                 </div>

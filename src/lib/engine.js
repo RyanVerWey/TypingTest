@@ -55,6 +55,10 @@ const TEXT = {
     "export async function loadData(url) { const res = await fetch(url); return res.json(); }",
   ],
 };
+export function practiceChunk(level, random = Math.random) {
+  const pool = TEXT[level] || TEXT.foundation;
+  return pool[Math.floor(random() * pool.length)];
+}
 export function passage(level, random = Math.random) {
   const pool = [...(TEXT[level] || TEXT.foundation)];
   for (let i = pool.length - 1; i > 0; i--) {

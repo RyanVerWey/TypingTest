@@ -21,16 +21,17 @@ test("adaptive progression is earned at a completed boundary and never rewrites 
   const s = round("foundation"),
     before = s.target;
   const change = advanceAdaptive(s, 9000);
-  assert.equal(change.nextLevel, "flow");
+  assert.equal(change.scheduledLevel, "flow");
+  assert.equal(change.nextLevel, "foundation");
   assert.equal(s.adaptive.round, 2);
   assert.ok(s.target.startsWith(before + " "));
-  assert.equal(s.text, before);
+  assert.equal(s.text, before.slice(0, 90));
   assert.equal(advanceAdaptive(s, 9100), null);
   assert.equal(metrics(s, 10000).seconds, 10);
 });
 test("low accuracy offers a lighter round; foundation never underflows", () => {
   const s = round("precision", true);
-  assert.equal(advanceAdaptive(s, 9000).nextLevel, "flow");
+  assert.equal(advanceAdaptive(s, 9000).scheduledLevel, "flow");
   const first = round("foundation", true);
   assert.equal(advanceAdaptive(first, 9000).nextLevel, "foundation");
 });
@@ -44,6 +45,38 @@ test("a timed-out session cannot append another adaptive passage", () => {
   const s = round("foundation");
   finish(s, 60000);
   assert.equal(advanceAdaptive(s, 60001), null);
+});
+test("read-ahead stays queued across checkpoints without waiting, replacing text, or losing input", () => {
+  const s = enableAdaptive(createSession("a".repeat(90), 120), "foundation");
+  assert.ok(s.target.length > s.adaptive.roundEnd + 60);
+  let now = 0;
+  for (let round = 1; round <= 4; round++) {
+    const prefix = s.target;
+    const boundary = s.adaptive.roundEnd;
+    const upcomingStage = s.adaptive.queuedStage;
+    while (s.text.length < boundary) {
+      assert.equal(input(s, s.text + s.target[s.text.length], now), true);
+      now += 100;
+      if (s.text.length < boundary) assert.equal(advanceAdaptive(s, now), null);
+    }
+    assert.ok(s.target.length - s.text.length > 60, "next passage was visible before completion");
+    assert.ok(advanceAdaptive(s, now));
+    assert.equal(s.adaptive.stage, upcomingStage);
+    assert.ok(s.target.startsWith(prefix + " "));
+    assert.equal(s.adaptive.roundEnd, prefix.length);
+    assert.equal(s.adaptive.round, round + 1);
+    assert.equal(advanceAdaptive(s, now), null);
+    assert.equal(input(s, s.text + s.target[s.text.length], now), true);
+    now += 100;
+  }
+  assert.ok(s.adaptive.stage >= 1, "queued difficulty reaches the active passage");
+  assert.equal(s.attempts.length, s.text.length);
+});
+test("an expired running session cannot advance before finish has been called", () => {
+  const s = round("foundation");
+  const before = s.target;
+  assert.equal(advanceAdaptive(s, 60000), null);
+  assert.equal(s.target, before);
 });
 test("detailed intervals reconcile retained correct output and preserve error attempts", () => {
   const s = createSession("cat", 15);
