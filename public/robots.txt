@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://typingspeed.ryanverwey.dev/sitemap.xml

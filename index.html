@@ -1,38 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <link rel="icon" type="image/svg+xml" href="/vite.svg">
-    <meta name="description" content="Test your typing speed and accuracy with this interactive Typing Speed Test. Challenge yourself and improve your skills!">
-    <meta property="og:title" content="Typing Speed Test">
-    <meta property="og:description" content="Test your typing speed and accuracy with this interactive Typing Speed Test. Challenge yourself and improve your skills!">
-    <meta property="og:image" content="https://speedtest-b0c193f4cfb2.herokuapp.com/typing-test-preview.png">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://speedtest-b0c193f4cfb2.herokuapp.com//">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Typing Speed Test">
-    <meta name="twitter:description" content="Test your typing speed and accuracy with this interactive Typing Speed Test. Challenge yourself and improve your skills!">
-    <meta name="twitter:image" content="https://speedtest-b0c193f4cfb2.herokuapp.com/typing-test-preview.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Typing Speed Test</title>
-    <script>
-      (function() {
-        try {
-          var theme = sessionStorage.getItem('typingTester:theme') || 'dark';
-          var html = document.documentElement;
-          if (theme === 'dark') {
-            html.setAttribute('data-theme', 'dark');
-            html.classList.add('dark');
-          } else {
-            html.removeAttribute('data-theme');
-            html.classList.remove('dark');
-          }
-        } catch (e) {}
-      })();
-    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#215b47" />
+    <title>Typing Force | Find your flow</title>
+    <meta
+      name="description"
+      content="Build better typing habits with live WPM, accuracy, four practice levels, and a personal improvement plan. Free, private, and focused."
+    />
+    <link rel="icon" type="image/svg+xml" href="/brand/mark.svg" />
+    <link rel="canonical" href="https://typingspeed.ryanverwey.dev/" />
+    <meta property="og:title" content="Typing Force | Find your flow" />
+    <meta
+      property="og:description"
+      content="A clearer picture of how you type. A focused way to get better."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://typingspeed.ryanverwey.dev/" />
+    <meta
+      property="og:image"
+      content="https://typingspeed.ryanverwey.dev/brand/typing-force-social.jpg"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>
+    <noscript
+      >Typing Force needs JavaScript to measure keystrokes locally. Enable
+      JavaScript to start a private typing practice session.</noscript
+    >
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
