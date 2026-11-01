@@ -102,7 +102,7 @@ test("levels contain enough text for a full session and use typeable ASCII", () 
     assert.ok(text.length > 4000);
     assert.match(text, /^[\x20-\x7e]+$/);
   }
-  assert.match(passage("foundation"), /^[a-z ]+$/);
+  assert.match(passage("foundation"), /^[a-z .]+$/);
   assert.match(passage("precision"), /\d/);
   assert.match(passage("code"), /[{}]/);
 });

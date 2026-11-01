@@ -16,6 +16,7 @@ import StablePassage from "./StablePassage";
 import DetailedResults from "./DetailedResults";
 import { roundPassage, enableAdaptive, advanceAdaptive } from "./lib/adaptive";
 import { detailedReport } from "./lib/report";
+import { resetPassageRotation } from "./lib/content";
 
 const number = (n) => (n === null ? "—" : Math.round(n));
 function Chart({ points }) {
@@ -367,7 +368,7 @@ export default function App() {
   const session = useRef(null);
   if (!session.current)
     session.current = enableAdaptive(
-      createSession(roundPassage("foundation"), 60),
+      createSession(roundPassage("foundation", true), 60),
       "foundation",
     );
   const inputRef = useRef(null),
@@ -454,7 +455,8 @@ export default function App() {
   ) {
     const useAdaptive = nextAdaptive && !target;
     session.current = createSession(
-      target || (useAdaptive ? roundPassage(nextLevel) : passage(nextLevel)),
+      target ||
+        (useAdaptive ? roundPassage(nextLevel, true) : passage(nextLevel)),
       nextDuration,
     );
     if (useAdaptive) enableAdaptive(session.current, nextLevel);
@@ -464,7 +466,9 @@ export default function App() {
     setDrill(Boolean(target));
     setResult(null);
     setNotice("");
-    setTick(0);
+    // Restart also needs a render before the first key, when every other
+    // setting is unchanged. The new session has no start time yet.
+    setTick(performance.now());
     setShowHistory(false);
   }
   function change(e) {
@@ -582,8 +586,13 @@ export default function App() {
                         "Delete all typing history saved in this browser?",
                       )
                     ) {
-                      if (saveHistory([])) setHistory([]);
-                      else
+                      if (saveHistory([])) {
+                        setHistory([]);
+                        if (!resetPassageRotation())
+                          setNotice(
+                            "Scores cleared. Passage rotation could not be cleared; use browser site settings to remove it.",
+                          );
+                      } else
                         setNotice(
                           "Unable to clear browser storage. Please clear site data in browser settings.",
                         );

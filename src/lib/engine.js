@@ -1,8 +1,11 @@
+import { targetedPassage } from "./content.js";
+export { passage, practiceChunk } from "./content.js";
+
 export const LEVELS = [
   {
     id: "foundation",
     name: "Foundation",
-    detail: "Common words · lowercase",
+    detail: "Lowercase sentences · periods",
     goal: 30,
   },
   {
@@ -24,49 +27,6 @@ export const LEVELS = [
     goal: 60,
   },
 ];
-const TEXT = {
-  foundation: [
-    "small steps build strong habits when we make time to learn something new each day",
-    "the quiet morning gives us room to think and find a clear path through our work",
-    "keep your hands relaxed and let each word find its own steady place on the page",
-    "we can take a short walk by the river and watch the light move across the water",
-    "a good idea starts with a simple question and grows when we share it with others",
-    "read the next word before you reach it and give each letter the space it needs",
-  ],
-  flow: [
-    "Good work begins with a clear question. Take your time, notice the details, and keep moving.",
-    "The afternoon train arrived early. Maya closed her book, found her bag, and stepped outside.",
-    "A useful habit is easy to repeat. Start small, practice often, and let progress follow.",
-    "Can you keep a steady pace? Read a little ahead, relax your shoulders, and trust your practice.",
-    "We learn by trying, reflecting, and trying again. A mistake is information we can use.",
-  ],
-  precision: [
-    "On May 14, 2026, the team shipped version 3.2. Revenue rose 18%, while costs fell by $42.50.",
-    "Meet at 09:30 in room #204. Bring 3 notebooks, 12 pens, and a 64 GB drive (USB-C).",
-    "The order totals $128.75: 4 items at $25.00, plus $28.75 for shipping & handling.",
-    "Compare Q1 (72%) with Q2 (89%). Is the difference > 10%? Yes: 89 - 72 = 17.",
-    'Save the file as report_2026-11.csv; use the label "Ready" for records 101 through 125.',
-  ],
-  code: [
-    "const score = Math.round((correct / 5) / minutes); return { score, accuracy: 98 };",
-    "function greet(name) { return `Hello, ${name}!`; } const ready = items.length > 0;",
-    "const result = users.filter(user => user.active).map(user => user.name);",
-    'if (response.ok && count !== 0) { cache.set("status", true); count += 1; }',
-    "export async function loadData(url) { const res = await fetch(url); return res.json(); }",
-  ],
-};
-export function practiceChunk(level, random = Math.random) {
-  const pool = TEXT[level] || TEXT.foundation;
-  return pool[Math.floor(random() * pool.length)];
-}
-export function passage(level, random = Math.random) {
-  const pool = [...(TEXT[level] || TEXT.foundation)];
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
-  }
-  return Array.from({ length: 12 }, () => pool.join(" ")).join(" ");
-}
 export function createSession(target, duration) {
   return {
     target,
@@ -246,17 +206,8 @@ export function analyze(session, now) {
   };
 }
 export function practiceText(result) {
-  const keys = result.weakKeys.slice(0, 4).map((k) => k.label);
-  const words = Object.values(TEXT).flat().join(" ").split(/\s+/);
-  const focus = [
-    ...new Set(
-      keys.flatMap((key) =>
-        [
-          ...new Set(words.filter((word) => key === " " || word.includes(key))),
-        ].slice(0, 6),
-      ),
-    ),
-  ];
-  const seed = focus.length ? focus.join(" ") : TEXT.flow.join(" ");
-  return Array.from({ length: 20 }, () => seed).join(" ");
+  return targetedPassage(
+    result.weakKeys.slice(0, 4).map((key) => key.label),
+    result.level,
+  );
 }
